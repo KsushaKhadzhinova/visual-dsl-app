@@ -10,7 +10,7 @@
 
 ## Установка
 
-```bash
+```
 git clone https://github.com/KsushaKhadzhinova/visual-dsl-app.git
 cd visual-dsl-app
 npm install
