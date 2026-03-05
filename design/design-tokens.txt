@@ -1,0 +1,15 @@
+ЦВЕТОВАЯ ПАЛИТРА
+
+Black (Editor Background): #1E1E1E
+White (Canvas Background): #FFFFFF
+Gray (Border/Secondary): #E5E7EB
+Purple (AI Accent): #8B5CF6
+Blue (Primary Buttons): #3B82F6
+Green (Success): #10B981
+Red (Error/Debug): #EF4444
+Yellow (Decision): #F59E0B
+
+ШРИФТЫ
+
+Интерфейс: Inter (Sans-serif)
+Код: Source Code Pro (Monospace)

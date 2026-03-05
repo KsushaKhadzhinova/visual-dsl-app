@@ -1,73 +1,100 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const notationButton = document.getElementById('notation-button');
-    const notationDropdown = document.querySelector('.dropdown-select__list');
-    const exportButton = document.querySelector('[aria-controls="export-dialog"]');
-    const exportDialog = document.getElementById('export-dialog');
-    const aiButton = document.querySelector('[aria-controls="ai-prompt-panel"]');
-    const aiPanel = document.getElementById('ai-prompt-panel');
-    const closeButtons = document.querySelectorAll('.button--close');
-    const runButton = document.querySelector('.button--run');
+const buttonElementToOpenAiAssistantSideDrawer = document.getElementById("ai-assistant-trigger");
+const buttonElementToCloseAiAssistantSideDrawer = document.getElementById("ai-assistant-close-button-action");
+const containerElementForAiAssistantSideDrawer = document.getElementById("ai-assistant-side-drawer-panel");
 
-    const toggleElement = (element, forceClose = false) => {
-        if (!element) return;
-        if (forceClose) {
-            element.style.display = 'none';
-        } else {
-            const isHidden = window.getComputedStyle(element).display === 'none';
-            element.style.display = isHidden ? 'block' : 'none';
-        }
-    };
+const buttonElementToOpenExportSettingsModalWindow = document.getElementById("export-dialog-trigger");
+const buttonElementToCloseExportSettingsModalWindow = document.getElementById("export-dialog-close-button-action");
+const containerElementForExportSettingsModalWindow = document.getElementById("export-options-modal-window-container");
 
-    notationButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleElement(notationDropdown);
-        notationButton.setAttribute('aria-expanded', notationDropdown.style.display === 'block');
-    });
+const buttonElementToChangeDiagramNotationType = document.getElementById("notation-selector-trigger");
+const textElementDisplayingActiveNotationValue = document.querySelector(".dropdown-active-value-text-dynamic");
 
-    exportButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleElement(exportDialog);
-    });
+const buttonElementToExecuteDiagramRenderingProcess = document.querySelector(".toolbar-action-button-to-execute-rendering");
+const containerElementForDiagramVisualizationOutput = document.querySelector(".diagram-canvas-svg-rendering-wrapper");
+const textareaElementForUserDiagramSourceCode = document.querySelector(".editor-source-code-text-input-field");
 
-    aiButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        aiPanel.classList.toggle('active');
-        const isActive = aiPanel.classList.contains('active');
-        aiPanel.style.bottom = isActive ? '0' : '-300px';
-    });
+function changeVisibilityStatusOfUserInterfaceElement(userInterfaceElement, makeVisible) {
+  if (makeVisible) {
+    userInterfaceElement.classList.remove("hidden-interface-element");
+    userInterfaceElement.style.display = "flex";
+  } else {
+    userInterfaceElement.classList.add("hidden-interface-element");
+    userInterfaceElement.style.display = "none";
+  }
+}
 
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            aiPanel.classList.remove('active');
-            aiPanel.style.bottom = '-300px';
-            toggleElement(exportDialog, true);
-        });
-    });
+function executeVisualRenderingSimulationForDiagram() {
+  containerElementForDiagramVisualizationOutput.style.transition = "opacity 0.3s ease-in-out";
+  containerElementForDiagramVisualizationOutput.style.opacity = "0.2";
 
-    document.addEventListener('click', (e) => {
-        if (!notationButton.contains(e.target)) {
-            toggleElement(notationDropdown, true);
-            notationButton.setAttribute('aria-expanded', 'false');
-        }
-        if (exportDialog && !exportDialog.contains(e.target) && e.target !== exportButton) {
-            toggleElement(exportDialog, true);
-        }
-    });
+  setTimeout(function restoreDiagramAppearanceAfterSimulatedDelay() {
+    containerElementForDiagramVisualizationOutput.style.opacity = "1";
+    console.log("Интерфейс: Визуализация успешно обновлена для кода: " + textareaElementForUserDiagramSourceCode.value);
+  }, 450);
+}
 
-    runButton.addEventListener('click', () => {
-        const svg = document.querySelector('.diagram-preview__svg');
-        svg.style.opacity = '0.5';
-        setTimeout(() => {
-            svg.style.opacity = '1';
-            console.log('Diagram re-rendered');
-        }, 300);
-    });
+function handleUserActionOpenAiAssistant() {
+  changeVisibilityStatusOfUserInterfaceElement(containerElementForAiAssistantSideDrawer, true);
+}
 
-    const notationOptions = document.querySelectorAll('.dropdown-select__option');
-    notationOptions.forEach(option => {
-        option.addEventListener('click', () => {
-            document.querySelector('.dropdown-select__current').textContent = option.textContent;
-            toggleElement(notationDropdown, true);
-        });
-    });
-});
+function handleUserActionCloseAiAssistant() {
+  changeVisibilityStatusOfUserInterfaceElement(containerElementForAiAssistantSideDrawer, false);
+}
+
+function handleUserActionOpenExportSettings() {
+  changeVisibilityStatusOfUserInterfaceElement(containerElementForExportSettingsModalWindow, true);
+}
+
+function handleUserActionCloseExportSettings() {
+  changeVisibilityStatusOfUserInterfaceElement(containerElementForExportSettingsModalWindow, false);
+}
+
+function handleUserActionSwitchDiagramNotation() {
+  const currentNotationNameValue = textElementDisplayingActiveNotationValue.textContent;
+  
+  if (currentNotationNameValue === "Mermaid") {
+    textElementDisplayingActiveNotationValue.textContent = "PlantUML";
+  } else if (currentNotationNameValue === "PlantUML") {
+    textElementDisplayingActiveNotationValue.textContent = "D2";
+  } else {
+    textElementDisplayingActiveNotationValue.textContent = "Mermaid";
+  }
+}
+
+function handleMouseClickEventsOutsideOfModalWindows(mouseClickEventInformation) {
+  const userClickedDirectlyOnExportModalOverlay = mouseClickEventInformation.target === containerElementForExportSettingsModalWindow;
+
+  if (userClickedDirectlyOnExportModalOverlay) {
+    handleUserActionCloseExportSettings();
+  }
+}
+
+function initializeAllApplicationInterfaceInteractions() {
+  if (buttonElementToOpenAiAssistantSideDrawer) {
+    buttonElementToOpenAiAssistantSideDrawer.addEventListener("click", handleUserActionOpenAiAssistant);
+  }
+
+  if (buttonElementToCloseAiAssistantSideDrawer) {
+    buttonElementToCloseAiAssistantSideDrawer.addEventListener("click", handleUserActionCloseAiAssistant);
+  }
+
+  if (buttonElementToOpenExportSettingsModalWindow) {
+    buttonElementToOpenExportSettingsModalWindow.addEventListener("click", handleUserActionOpenExportSettings);
+  }
+
+  if (buttonElementToCloseExportSettingsModalWindow) {
+    buttonElementToCloseExportSettingsModalWindow.addEventListener("click", handleUserActionCloseExportSettings);
+  }
+
+  if (buttonElementToChangeDiagramNotationType) {
+    buttonElementToChangeDiagramNotationType.addEventListener("click", handleUserActionSwitchDiagramNotation);
+  }
+
+  if (buttonElementToExecuteDiagramRenderingProcess) {
+    buttonElementToExecuteDiagramRenderingProcess.addEventListener("click", executeVisualRenderingSimulationForDiagram);
+  }
+
+  window.addEventListener("click", handleMouseClickEventsOutsideOfModalWindows);
+}
+
+document.addEventListener("DOMContentLoaded", initializeAllApplicationInterfaceInteractions);
