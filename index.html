@@ -3,153 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual DSL - Diagram-as-Code</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Стили для сетки на фоне холста */
-        .bg-grid {
-            background-color: #f8fafc;
-            background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-                              linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        
-        /* Скрытие скроллбара для красоты (по желанию) */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280; 
-        }
-    </style>
+    <meta name="description" content="DiagramCode — профессиональный SaaS сервис для визуализации графиков и диаграмм из кода Mermaid и PlantUML">
+    <meta name="keywords" content="диаграммы, mermaid, plantuml, визуализация кода, редактор графов, SaaS">
+    <title>DiagramCode — Визуализация графиков из кода</title>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col font-sans text-gray-800">
+<body itemscope itemtype="https://schema.org/SoftwareApplication">
+    <meta itemprop="applicationCategory" content="DesignApplication">
+    <meta itemprop="operatingSystem" content="Windows, Multimedia, Web">
 
-    <header class="h-14 border-b border-gray-200 bg-white flex items-center justify-between px-4 shrink-0 z-20 shadow-sm">
-        <div class="flex items-center space-x-6">
-            <div class="font-bold text-xl flex items-center gap-2 text-gray-800">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
-                Visual DSL
-            </div>
+    <a href="#main-content" class="skip-link">Перейти к основному содержимому</a>
 
-            <div class="flex items-center space-x-2">
-                <label for="notation" class="text-sm text-gray-500 font-medium">Нотация:</label>
-                <select id="notation" class="bg-gray-50 border border-gray-300 text-gray-700 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-1.5 outline-none cursor-pointer">
-                    <option value="UML">UML</option>
-                    <option value="BPMN">BPMN</option>
-                    <option value="Petri">Petri Nets</option>
-                </select>
-            </div>
+    <header class="app-header" role="banner">
+        <div class="app-header__logo-container">
+            <svg class="app-header__logo" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DiagramCode Logo">
+                <rect width="32" height="32" rx="8" fill="url(#logo-gradient)"/>
+                <path d="M10 10H16V16H10V10Z" fill="white"/>
+                <path d="M16 16H22V22H16V16Z" fill="white" fill-opacity="0.6"/>
+                <defs>
+                    <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#3B82F6"/>
+                        <stop offset="1" stop-color="#9333EA"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span class="app-header__brand" itemprop="name">DiagramCode</span>
         </div>
 
-        <div class="flex items-center space-x-3 text-sm font-medium">
-            <button class="bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                Сгенерировать
-            </button>
-            <button class="border border-gray-300 bg-white text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-50 transition-colors shadow-sm flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                Сохранить
-            </button>
-            <button class="border border-gray-300 bg-white text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-50 transition-colors shadow-sm flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Экспорт
-            </button>
-            <button class="text-gray-600 hover:text-gray-900 px-2 py-1.5 flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                История версий
-            </button>
-            <div class="w-px h-6 bg-gray-300 mx-1"></div>
-            <button class="bg-purple-100 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-md hover:bg-purple-200 transition-colors flex items-center gap-1 shadow-sm">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> ✨ AI Генерация
-            </button>
+        <nav class="app-header__nav" aria-label="Основная навигация">
+            <div class="dropdown-select">
+                <button class="dropdown-select__trigger" aria-haspopup="listbox" aria-expanded="false" id="notation-button">
+                    Notation: <span class="dropdown-select__current">Mermaid</span>
+                </button>
+                <ul class="dropdown-select__list" role="listbox" aria-labelledby="notation-button">
+                    <li class="dropdown-select__option" role="option">Mermaid</li>
+                    <li class="dropdown-select__option" role="option">PlantUML</li>
+                    <li class="dropdown-select__option" role="option">Graphviz</li>
+                    <li class="dropdown-select__option" role="option">D2</li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="app-header__actions">
+            <button class="button button--primary button--run" type="button">Run</button>
+            <button class="button button--secondary" type="button">Save</button>
+            <button class="button button--secondary" type="button" aria-controls="export-dialog">Export</button>
+            <button class="button button--ai" type="button" aria-controls="ai-prompt-panel">AI Prompt</button>
         </div>
+
+        <button class="app-header__help" type="button" aria-label="Справка и документация" title="Помощь"></button>
     </header>
 
-    <main class="flex flex-1 overflow-hidden">
-        
-        <aside class="w-[35%] min-w-[300px] bg-[#1e1e1e] flex flex-col border-r border-gray-300 relative">
-            <div class="h-9 flex items-center bg-[#252526] text-[#cccccc] text-xs px-4 font-sans tracking-wide border-b border-[#333]">
-                <span class="opacity-70">diagram.dsl</span>
+    <main class="app-workspace" id="main-content" role="main">
+        <section class="code-editor" aria-label="Редактор кода">
+            <h1 class="visually-hidden">Редактор кода диаграммы DiagramCode</h1>
+            <div class="code-editor__gutter" aria-hidden="true">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
             </div>
-            
-            <div class="flex-1 overflow-auto flex py-4 text-sm font-mono leading-relaxed">
-                <div class="w-12 shrink-0 text-right pr-4 text-[#858585] select-none border-r border-[#404040]">
-                    1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9
-                </div>
-                <div class="flex-1 px-4 text-[#d4d4d4] whitespace-pre outline-none" contenteditable="true" spellcheck="false">
-<span class="text-[#569cd6]">diagram</span> <span class="text-[#4ec9b0]">SystemArchitecture</span> {
-    <span class="text-[#6a9955]">// Определение узлов</span>
-    <span class="text-[#569cd6]">node</span> A [<span class="text-[#9cdcfe]">label</span>=<span class="text-[#ce9178]">'Client App'</span>];
-    <span class="text-[#569cd6]">node</span> B [<span class="text-[#9cdcfe]">label</span>=<span class="text-[#ce9178]">'API Gateway'</span>];
-    <span class="text-[#569cd6]">node</span> C [<span class="text-[#9cdcfe]">label</span>=<span class="text-[#ce9178]">'Database'</span>];
-
-    <span class="text-[#6a9955]">// Связи и стрелки</span>
-    A <span class="text-[#c586c0]">-&gt;</span> B : <span class="text-[#dcdcaa]">request data</span>;
-    B <span class="text-[#c586c0]">-&gt;</span> C : <span class="text-[#dcdcaa]">SQL query</span>;
-}</div>
-            </div>
-        </aside>
-
-        <section class="flex-1 bg-grid relative overflow-hidden flex items-center justify-center">
-            
-            <div class="relative flex items-center gap-12 select-none z-10 cursor-move">
-                
-                <div class="bg-white border-2 border-blue-400 rounded-lg shadow-md w-32 h-16 flex items-center justify-center hover:shadow-lg hover:border-blue-500 transition-all">
-                    <span class="font-semibold text-gray-700">Client App</span>
-                </div>
-
-                <div class="relative flex flex-col items-center">
-                    <span class="absolute -top-6 text-xs text-gray-500 bg-white/80 px-1 rounded">request data</span>
-                    <svg width="100" height="24" class="text-gray-400">
-                        <path d="M0,12 L96,12" fill="none" stroke="currentColor" stroke-width="2"/>
-                        <polygon points="90,6 100,12 90,18" fill="currentColor"/>
-                    </svg>
-                </div>
-
-                <div class="bg-white border-2 border-indigo-400 rounded-lg shadow-md w-32 h-16 flex items-center justify-center hover:shadow-lg hover:border-indigo-500 transition-all">
-                    <span class="font-semibold text-gray-700">API Gateway</span>
-                </div>
-
-                <div class="relative flex flex-col items-center">
-                    <span class="absolute -top-6 text-xs text-gray-500 bg-white/80 px-1 rounded">SQL query</span>
-                    <svg width="100" height="24" class="text-gray-400">
-                        <path d="M0,12 L96,12" fill="none" stroke="currentColor" stroke-width="2"/>
-                        <polygon points="90,6 100,12 90,18" fill="currentColor"/>
-                    </svg>
-                </div>
-
-                <div class="bg-white border-2 border-emerald-400 rounded-lg shadow-md w-32 h-16 flex items-center justify-center hover:shadow-lg hover:border-emerald-500 transition-all">
-                    <span class="font-semibold text-gray-700">Database</span>
-                </div>
-
-            </div>
-
-            <div class="absolute bottom-6 right-6 flex flex-col bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden z-20">
-                <button class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-b border-gray-200 transition-colors" title="Zoom In">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <button class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-b border-gray-200 transition-colors" title="Zoom Out">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <button class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 text-[11px] font-bold transition-colors" title="Fit to Screen">
-                    FIT
-                </button>
+            <div class="code-editor__container">
+                <textarea class="code-editor__input" spellcheck="false" aria-label="Поле ввода Mermaid кода">graph TD
+A[Start] --> B{Is it working?}
+B -->|Yes| C[Great!]
+B -->|No| D[Debug]
+D --> B
+C --> E[End]</textarea>
             </div>
         </section>
+
+        <section class="diagram-preview" aria-label="Предпросмотр диаграммы">
+            <h2 class="visually-hidden">Результат визуализации</h2>
+            <figure class="diagram-preview__canvas" id="diagram-canvas">
+                <svg class="diagram-preview__svg" viewBox="0 0 600 500" role="img" aria-labelledby="diagram-title diagram-desc">
+                    <title id="diagram-title">Блок-схема процесса отладки</title>
+                    <desc id="diagram-desc">Визуализация алгоритма проверки работоспособности.</desc>
+                    
+                    <rect x="230" y="20" width="140" height="60" rx="8" fill="#3B82F6" />
+                    <text x="300" y="55" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif" font-weight="500">Start</text>
+                    
+                    <line x1="300" y1="80" x2="300" y2="120" stroke="#64748B" stroke-width="2" />
+                    
+                    <polygon points="300,120 400,170 300,220 200,170" fill="#FBBF24" />
+                    <text x="300" y="175" text-anchor="middle" fill="#78350F" font-family="Inter, sans-serif" font-size="14">Is it working?</text>
+                    
+                    <path d="M 200 170 Q 110 170 110 240" stroke="#64748B" stroke-width="2" fill="none" />
+                    <rect x="40" y="240" width="140" height="60" rx="8" fill="#EF4444" />
+                    <text x="110" y="275" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif">Debug</text>
+
+                    <line x1="400" y1="170" x2="490" y2="240" stroke="#64748B" stroke-width="2" />
+                    <rect x="420" y="240" width="140" height="60" rx="8" fill="#10B981" />
+                    <text x="490" y="275" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif">Great!</text>
+                </svg>
+                <figcaption class="visually-hidden">Предпросмотр сгенерированной диаграммы.</figcaption>
+            </figure>
+        </section>
+
+        <aside class="ai-prompt-panel" id="ai-prompt-panel" aria-label="Генерация через ИИ">
+            <h3 class="ai-prompt-panel__title">AI Prompt</h3>
+            <form class="ai-prompt-form">
+                <div class="ai-prompt-form__field">
+                    <label for="ai-engine-select" class="ai-prompt-form__label">Engine:</label>
+                    <select id="ai-engine-select" class="ai-prompt-form__select" name="engine">
+                        <option value="mermaid">Mermaid v10</option>
+                        <option value="plantuml">PlantUML</option>
+                    </select>
+                </div>
+                <div class="ai-prompt-form__field">
+                    <label for="ai-input" class="ai-prompt-form__label">Prompt</label>
+                    <textarea id="ai-input" class="ai-prompt-form__textarea" name="prompt" placeholder="Describe the diagram you want to create..."></textarea>
+                </div>
+                <div class="ai-prompt-form__actions">
+                    <button class="button button--primary" type="submit">Generate</button>
+                    <button class="button button--secondary button--close" type="button">Close</button>
+                </div>
+            </form>
+        </aside>
+
+        <aside class="modal-dialog" id="export-dialog" role="dialog" aria-modal="true" aria-labelledby="export-title">
+            <div class="modal-dialog__content" itemscope itemtype="https://schema.org/Offer">
+                <h3 id="export-title" class="modal-dialog__title">Export Format</h3>
+                <form class="export-form">
+                    <fieldset class="export-form__fieldset">
+                        <legend class="visually-hidden">Формат файла</legend>
+                        <div class="export-form__option">
+                            <input type="radio" id="format-svg" name="export-format" value="svg" checked>
+                            <label for="format-svg">SVG</label>
+                        </div>
+                        <div class="export-form__option">
+                            <input type="radio" id="format-png" name="export-format" value="png">
+                            <label for="format-png">PNG</label>
+                        </div>
+                    </fieldset>
+                    <button class="button button--primary button--full" type="submit">
+                        Export <meta itemprop="price" content="0"><meta itemprop="priceCurrency" content="USD">
+                    </button>
+                </form>
+            </div>
+        </aside>
     </main>
 
+    <footer class="app-footer" role="contentinfo">
+        <div class="app-footer__status">
+            <span class="status-indicator status-indicator--online"></span>
+            <span>Статус системы: Работает нормально</span>
+        </div>
+        <div class="app-footer__copyright">
+            <span>&copy; 2026 DiagramCode. Программное обеспечение для визуализации.</span>
+        </div>
+    </footer>
+    <script src="js/script.js"></script>
 </body>
 </html>
