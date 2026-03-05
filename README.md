@@ -1,16 +1,40 @@
-# Visual DSL App
+# Visual DSL Diagrammer
 
-Веб‑приложение для визуального описания и работы с DSL (domain-specific language).  
-Проект разворачивается локально и запускается через Node.js / npm.
+Профессиональная SaaS-платформа для визуализации процессов на основе предметно-ориентированных языков (DSL).
 
-## Требования
+## Технологический стек
 
-- Node.js (актуальная LTS‑версия)
-- npm
+* **Разметка:** HTML5 (Семантика + SVG)
+* **Микроразметка:** Schema.org (SoftwareApplication)
+* **Доступность:** ARIA-атрибуты, Skip-links
+* **Инструментарий:** VS Code, Git, Prettier
 
-## Установка
+---
 
-```
-git clone https://github.com/KsushaKhadzhinova/visual-dsl-app.git
-cd visual-dsl-app
-npm install
+## Особенности проекта
+
+1.  **Diagram as Code:** Генерация графики происходит на основе текстового описания.
+2.  **AI-интеграция:** Использование нейросетей для ускорения проектирования.
+3.  **Адаптивность:** Полная поддержка Desktop, Tablet и Mobile устройств.
+
+[Ссылка на макет в Figma](https://www.figma.com/...)
+
+
+VISUALDSL_PROJECT/
+├── css/
+│   └── style.css          # планируются стили для ЛР №4
+├── design/
+│   ├── design-tokens.txt  # Список цветов и шрифтов
+│   └── figma-link.txt     # Ссылка на макет
+├── images/
+│   ├── favicon.ico
+│   ├── logo.svg
+│   └── 
+├── js/
+│   └── main.js            # Базовая логика (пока может быть пустой)
+├── .gitignore             # Игнорирование
+├── .prettierrc            # Настройки форматирования
+├── index.html             # Главный файл (тот, что мы написали)
+├── package.json           # Настройки npm (lodash, nodemon)
+├── package-lock.json
+└── README.md              # Описание проекта
