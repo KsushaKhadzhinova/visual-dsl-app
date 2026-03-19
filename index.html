@@ -3,157 +3,725 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DiagramCode — профессиональный SaaS сервис для визуализации графиков и диаграмм из кода Mermaid и PlantUML">
-    <meta name="keywords" content="диаграммы, mermaid, plantuml, визуализация кода, редактор графов, SaaS">
-    <title>DiagramCode — Визуализация графиков из кода</title>
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta name="description" content="DiagramCode — профессиональная SaaS-платформа для моделирования диаграмм из программного кода (DSL).">
+    <meta name="author" content="Ксения Хаджинова">
+    <title>DiagramCode — Visual DSL Diagrammer IDE</title>
+    
+      <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+
+        :root {
+            --color-primary: #030213;
+            --color-accent-purple: #8b5cf6;
+            --color-accent-blue: #3b82f6;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            
+            --bg-page: #ffffff;
+            --bg-canvas: #f9fafb;
+            --bg-editor: #1e1e1e;
+            --bg-modal-footer: #fcfcfd;
+            
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-on-dark: #d4d4d8;
+            
+            --border-light: rgba(0, 0, 0, 0.1);
+            --border-editor: #3e3e3e;
+            
+            --header-h: 64px;
+            --footer-h: 40px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            
+            --font-sans: 'Inter', system-ui, sans-serif;
+            --font-mono: 'Source Code Pro', monospace;
+            
+            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.page {
+            font-family: var(--font-sans);
+            color: var(--text-main);
+            background-color: var(--bg-page);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-primary);
+            color: white;
+            padding: 12px 24px;
+            z-index: 10000;
+            text-decoration: none;
+            border-radius: 0 0 10px 10px;
+            font-weight: 600;
+            transition: top 0.3s;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            transition: var(--transition-base);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .button--primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .button--primary:hover {
+            background-color: #1a1a2e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .button--outline {
+            border-color: var(--border-light);
+            color: var(--text-main);
+        }
+
+        .button--outline:hover {
+            background-color: var(--bg-canvas);
+        }
+
+        .button--ghost {
+            color: var(--text-muted);
+        }
+
+        .button--ghost:hover {
+            color: var(--color-primary);
+            background-color: var(--bg-canvas);
+        }
+
+        .button--ai {
+            background-color: #f5f3ff;
+            color: var(--color-accent-purple);
+            border-color: #ddd6fe;
+        }
+
+        .button--ai:hover {
+            background-color: #ede9fe;
+        }
+
+        .button--fab {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-full);
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            z-index: 50;
+        }
+
+        .header {
+            height: var(--header-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-light);
+            background: white;
+            z-index: 100;
+        }
+
+        .header__logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header__logo-box {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .header__title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header__nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header__select-wrapper {
+            position: relative;
+            margin-right: 8px;
+        }
+
+        .header__select {
+            appearance: none;
+            background-color: var(--bg-canvas);
+            border: 1px solid var(--border-light);
+            padding: 6px 32px 6px 12px;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .header__burger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            width: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .header__burger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--color-primary);
+            transition: var(--transition-base);
+        }
+
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            z-index: 1000;
+            padding: 40px 24px;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-drawer.is-open {
+            right: 0;
+        }
+
+        .workspace {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            overflow: hidden;
+        }
+
+        .editor {
+            background-color: var(--bg-editor);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--color-editor-border);
+        }
+
+        .editor__gutter {
+            width: 50px;
+            background: rgba(0,0,0,0.2);
+            padding: 20px 0;
+            text-align: right;
+            padding-right: 12px;
+            color: var(--color-editor-line-numbers);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.6;
+            user-select: none;
+        }
+
+        .editor__container {
+            display: flex;
+            height: 100%;
+        }
+
+        .editor__textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 20px;
+            color: var(--text-on-dark);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .preview {
+            background-color: var(--bg-canvas);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .preview__wrapper {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            max-width: 100%;
+            max-height: 100%;
+            overflow: auto;
+            border: 1px solid var(--border-light);
+        }
+
+        .preview__svg {
+            display: block;
+            height: auto;
+            max-width: 100%;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            visibility: hidden;
+            opacity: 0;
+            transition: var(--transition-base);
+        }
+
+        .modal.is-active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal__overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(3, 2, 19, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal__content {
+            position: relative;
+            background: white;
+            width: 100%;
+            max-width: 440px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-modal);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: var(--transition-base);
+        }
+
+        .modal.is-active .modal__content {
+            transform: translateY(0);
+        }
+
+        .modal__header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal__body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal__footer {
+            padding: 20px 24px;
+            background: var(--bg-modal-footer);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .header__nav .button:not(.button--run) {
+                display: none;
+            }
+
+            .header__burger {
+                display: flex;
+            }
+
+            .desktop-only {
+                display: none !important;
+            }
+
+            .workspace__tabs {
+                display: flex;
+                background: var(--bg-canvas);
+                border-bottom: 1px solid var(--border-light);
+            }
+
+            .workspace__tab {
+                flex: 1;
+                padding: 12px;
+                text-align: center;
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--text-muted);
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+            }
+
+            .workspace__tab.is-active {
+                color: var(--color-accent-purple);
+                border-bottom-color: var(--color-accent-purple);
+                background: white;
+            }
+        }
+    </style>
 </head>
-<body itemscope itemtype="https://schema.org/SoftwareApplication">
-    <meta itemprop="applicationCategory" content="DesignApplication">
-    <meta itemprop="operatingSystem" content="Windows, Multimedia, Web">
 
-    <a href="#main-content" class="skip-link">Перейти к основному содержимому</a>
+<body class="page" itemscope itemtype="https://schema.org/SoftwareApplication">
+    <meta itemprop="applicationCategory" content="DeveloperApplication">
+    <meta itemprop="operatingSystem" content="Web">
 
-    <header class="app-header" role="banner">
-        <div class="app-header__logo-container">
-            <svg class="app-header__logo" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DiagramCode Logo">
-                <rect width="32" height="32" rx="8" fill="url(#logo-gradient)"/>
-                <path d="M10 10H16V16H10V10Z" fill="white"/>
-                <path d="M16 16H22V22H16V16Z" fill="white" fill-opacity="0.6"/>
-                <defs>
-                    <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#3B82F6"/>
-                        <stop offset="1" stop-color="#9333EA"/>
-                    </linearGradient>
-                </defs>
-            </svg>
-            <span class="app-header__brand" itemprop="name">DiagramCode</span>
-        </div>
+    <a href="#main-content" class="skip-link">Перейти к контенту</a>
 
-        <nav class="app-header__nav" aria-label="Основная навигация">
-            <div class="dropdown-select">
-                <button class="dropdown-select__trigger" aria-haspopup="listbox" aria-expanded="false" id="notation-button">
-                    Notation: <span class="dropdown-select__current">Mermaid</span>
-                </button>
-                <ul class="dropdown-select__list" role="listbox" aria-labelledby="notation-button">
-                    <li class="dropdown-select__option" role="option">Mermaid</li>
-                    <li class="dropdown-select__option" role="option">PlantUML</li>
-                    <li class="dropdown-select__option" role="option">Graphviz</li>
-                    <li class="dropdown-select__option" role="option">D2</li>
-                </ul>
+    <header class="header">
+        <div class="header__logo" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+            <div class="header__logo-box">
+                <i data-lucide="box" size="20"></i>
             </div>
-        </nav>
-
-        <div class="app-header__actions">
-            <button class="button button--primary button--run" type="button">Run</button>
-            <button class="button button--secondary" type="button">Save</button>
-            <button class="button button--secondary" type="button" aria-controls="export-dialog">Export</button>
-            <button class="button button--ai" type="button" aria-controls="ai-prompt-panel">AI Prompt</button>
+            <span class="header__title" itemprop="name">DiagramCode</span>
         </div>
 
-        <button class="app-header__help" type="button" aria-label="Справка и документация" title="Помощь"></button>
+        <nav class="header__nav" aria-label="Панель инструментов">
+            <div class="header__select-wrapper desktop-only">
+                <select class="header__select" id="notation-select">
+                    <option value="bpmn">BPMN 2.0</option>
+                    <option value="mermaid">Mermaid</option>
+                    <option value="plantuml">PlantUML</option>
+                </select>
+                <i data-lucide="chevron-down" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--text-muted)" size="14"></i>
+            </div>
+
+            <button class="button button--ghost desktop-only" id="help-trigger">
+                <i data-lucide="help-circle" size="18"></i>
+                Справка
+            </button>
+
+            <button class="button button--primary button--run" id="run-main">
+                <i data-lucide="play" size="16"></i>
+                Run
+            </button>
+
+            <button class="header__burger" id="burger-trigger" aria-label="Открыть меню">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
     </header>
 
-    <main class="app-workspace" id="main-content" role="main">
-        <section class="code-editor" aria-label="Редактор кода">
-            <h1 class="visually-hidden">Редактор кода диаграммы DiagramCode</h1>
-            <div class="code-editor__gutter" aria-hidden="true">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
-            </div>
-            <div class="code-editor__container">
-                <textarea class="code-editor__input" spellcheck="false" aria-label="Поле ввода Mermaid кода">graph TD
-A[Start] --> B{Is it working?}
-B -->|Yes| C[Great!]
-B -->|No| D[Debug]
-D --> B
-C --> E[End]</textarea>
+    <aside class="mobile-drawer" id="mobile-drawer">
+        <div style="display:flex; justify-content:space-between; margin-bottom:30px">
+            <h3 style="font-size:22px">Меню</h3>
+            <button id="drawer-close" style="background:none; border:none; cursor:pointer"><i data-lucide="x"></i></button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:20px">
+            <div style="color:var(--text-muted); font-size:12px; font-weight:700; text-transform:uppercase">Notation</div>
+            <button class="button button--outline" style="justify-content:flex-start">BPMN Diagram</button>
+            <button class="button button--outline" style="justify-content:flex-start">Sequence Diagram</button>
+            
+            <div style="color:var(--text-muted); font-size:12px; font-weight:700; text-transform:uppercase; margin-top:20px">Actions</div>
+            <button class="button button--outline" style="justify-content:flex-start" onclick="openModal('export-modal')"><i data-lucide="download"></i> Export</button>
+            <button class="button button--ai" style="justify-content:flex-start" onclick="openModal('ai-modal')"><i data-lucide="sparkles"></i> AI Prompt</button>
+        </div>
+    </aside>
+
+    <!-- РАБОЧАЯ ОБЛАСТЬ -->
+    <div class="workspace__tabs" id="mobile-tabs" style="display:none">
+        <div class="workspace__tab is-active" data-target="editor-section">Code</div>
+        <div class="workspace__tab" data-target="preview-section">Diagram</div>
+    </div>
+
+    <main class="workspace" id="main-content">
+        <!-- Секция редактора -->
+        <section class="editor" id="editor-section">
+            <div class="editor__container">
+                <div class="editor__gutter" id="line-numbers">
+                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
+                </div>
+                <textarea class="editor__textarea" id="code-input" spellcheck="false">graph TD
+    A[Start] --> B{Is it working?}
+    B -->|Yes| C[Great!]
+    B -->|No| D[Debug]
+    D --> B
+    C --> E[End]</textarea>
             </div>
         </section>
 
-        <section class="diagram-preview" aria-label="Предпросмотр диаграммы">
-            <h2 class="visually-hidden">Результат визуализации</h2>
-            <figure class="diagram-preview__canvas" id="diagram-canvas">
-                <svg class="diagram-preview__svg" viewBox="0 0 600 500" role="img" aria-labelledby="diagram-title diagram-desc">
-                    <title id="diagram-title">Блок-схема процесса отладки</title>
-                    <desc id="diagram-desc">Визуализация алгоритма проверки работоспособности.</desc>
-                    
-                    <rect x="230" y="20" width="140" height="60" rx="8" fill="#3B82F6" />
-                    <text x="300" y="55" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif" font-weight="500">Start</text>
-                    
-                    <line x1="300" y1="80" x2="300" y2="120" stroke="#64748B" stroke-width="2" />
-                    
-                    <polygon points="300,120 400,170 300,220 200,170" fill="#FBBF24" />
-                    <text x="300" y="175" text-anchor="middle" fill="#78350F" font-family="Inter, sans-serif" font-size="14">Is it working?</text>
-                    
-                    <path d="M 200 170 Q 110 170 110 240" stroke="#64748B" stroke-width="2" fill="none" />
-                    <rect x="40" y="240" width="140" height="60" rx="8" fill="#EF4444" />
-                    <text x="110" y="275" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif">Debug</text>
-
-                    <line x1="400" y1="170" x2="490" y2="240" stroke="#64748B" stroke-width="2" />
-                    <rect x="420" y="240" width="140" height="60" rx="8" fill="#10B981" />
-                    <text x="490" y="275" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif">Great!</text>
+        <section class="preview" id="preview-section">
+            <div class="preview__wrapper" id="svg-output">
+                <svg viewBox="0 0 600 450" class="preview__svg" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="230" y="20" width="140" height="60" rx="10" fill="#3B82F6" />
+                    <text x="300" y="55" text-anchor="middle" fill="white" font-weight="600">Start</text>
+                    <path d="M300 80 L300 120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+                    <polygon points="300,120 390,170 300,220 210,170" fill="#F59E0B" />
+                    <text x="300" y="175" text-anchor="middle" fill="#78350F" font-size="14" font-weight="800">Is it working?</text>
                 </svg>
-                <figcaption class="visually-hidden">Предпросмотр сгенерированной диаграммы.</figcaption>
-            </figure>
-        </section>
-
-        <aside class="ai-prompt-panel" id="ai-prompt-panel" aria-label="Генерация через ИИ">
-            <h3 class="ai-prompt-panel__title">AI Prompt</h3>
-            <form class="ai-prompt-form">
-                <div class="ai-prompt-form__field">
-                    <label for="ai-engine-select" class="ai-prompt-form__label">Engine:</label>
-                    <select id="ai-engine-select" class="ai-prompt-form__select" name="engine">
-                        <option value="mermaid">Mermaid v10</option>
-                        <option value="plantuml">PlantUML</option>
-                    </select>
-                </div>
-                <div class="ai-prompt-form__field">
-                    <label for="ai-input" class="ai-prompt-form__label">Prompt</label>
-                    <textarea id="ai-input" class="ai-prompt-form__textarea" name="prompt" placeholder="Describe the diagram you want to create..."></textarea>
-                </div>
-                <div class="ai-prompt-form__actions">
-                    <button class="button button--primary" type="submit">Generate</button>
-                    <button class="button button--secondary button--close" type="button">Close</button>
-                </div>
-            </form>
-        </aside>
-
-        <aside class="modal-dialog" id="export-dialog" role="dialog" aria-modal="true" aria-labelledby="export-title">
-            <div class="modal-dialog__content" itemscope itemtype="https://schema.org/Offer">
-                <h3 id="export-title" class="modal-dialog__title">Export Format</h3>
-                <form class="export-form">
-                    <fieldset class="export-form__fieldset">
-                        <legend class="visually-hidden">Формат файла</legend>
-                        <div class="export-form__option">
-                            <input type="radio" id="format-svg" name="export-format" value="svg" checked>
-                            <label for="format-svg">SVG</label>
-                        </div>
-                        <div class="export-form__option">
-                            <input type="radio" id="format-png" name="export-format" value="png">
-                            <label for="format-png">PNG</label>
-                        </div>
-                    </fieldset>
-                    <button class="button button--primary button--full" type="submit">
-                        Export <meta itemprop="price" content="0"><meta itemprop="priceCurrency" content="USD">
-                    </button>
-                </form>
             </div>
-        </aside>
+
+            <button class="button button--fab hidden-desktop" id="run-fab">
+                <i data-lucide="play" fill="white"></i>
+            </button>
+        </section>
     </main>
 
-    <footer class="app-footer" role="contentinfo">
-        <div class="app-footer__status">
-            <span class="status-indicator status-indicator--online"></span>
-            <span>Статус системы: Работает нормально</span>
+    <footer class="status-bar" style="height:var(--footer-h); border-top:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:var(--text-muted)">
+        <div style="display:flex; align-items:center; gap:8px">
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--color-success)"></span>
+            Engine: Connected
         </div>
-        <div class="app-footer__copyright">
-            <span>&copy; 2026 DiagramCode. Программное обеспечение для визуализации.</span>
+        <div style="display:flex; align-items:center; gap:8px">
+            <img src="https://ui-avatars.com/api/?name=Ksenia+Khadzhinova&background=030213&color=fff" alt="Великий бизнес-аналитик" style="width:20px; height:20px; border-radius:50%">
+            <span itemprop="author">Великий бизнес-аналитик</span>
+        </div>
+        <div class="desktop-only">
+            Notation: BPMN 2.0 | v1.0.4
         </div>
     </footer>
-    <script src="js/script.js"></script>
+
+    <div class="modal" id="help-modal">
+        <div class="modal__overlay" onclick="closeModal('help-modal')"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <div>
+                    <h2 style="font-size:20px">Документация</h2>
+                    <p style="font-size:13px; color:var(--text-muted)">Краткий справочник по синтаксису BPMN</p>
+                </div>
+                <button class="button--ghost" onclick="closeModal('help-modal')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal__body">
+                <div style="display:flex; flex-direction:column; gap:16px">
+                    <section>
+                        <h4 style="margin-bottom:8px">Элементы потока</h4>
+                        <ul style="padding-left:20px; font-size:14px; display:flex; flex-direction:column; gap:6px">
+                            <li><code>[Текст]</code> — Прямоугольная задача</li>
+                            <li><code>{Текст}</code> — Ромб принятия решения</li>
+                            <li><code>(Текст)</code> — Скругленное событие</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4 style="margin-bottom:8px">Пример кода</h4>
+                        <pre style="background:#f1f5f9; padding:12px; border-radius:6px; font-family:var(--font-mono); font-size:12px">graph TD
+  Start[Начало] --> Task[Проверка]
+  Task --> End(Конец)</pre>
+                    </section>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="button button--primary" onclick="closeModal('help-modal')">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="export-modal">
+        <div class="modal__overlay" onclick="closeModal('export-modal')"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 style="font-size:20px">Экспорт диаграммы</h2>
+                <button class="button--ghost" onclick="closeModal('export-modal')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal__body">
+                <div style="display:flex; flex-direction:column; gap:12px">
+                    <label style="display:flex; align-items:center; gap:12px; padding:16px; border:2px solid var(--color-accent-purple); border-radius:10px; background:#f5f3ff; cursor:pointer">
+                        <input type="radio" name="fmt" checked style="accent-color:var(--color-accent-purple)">
+                        <div style="display:flex; flex-direction:column">
+                            <span style="font-weight:700">SVG</span>
+                            <span style="font-size:12px; color:var(--text-muted)">Scalable Vector Graphics (Лучшее качество)</span>
+                        </div>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--border-light); border-radius:10px; cursor:pointer">
+                        <input type="radio" name="fmt" style="accent-color:var(--color-accent-purple)">
+                        <div style="display:flex; flex-direction:column">
+                            <span style="font-weight:700">PNG</span>
+                            <span style="font-size:12px; color:var(--text-muted)">Portable Network Graphics (Растровое фото)</span>
+                        </div>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--border-light); border-radius:10px; cursor:pointer">
+                        <input type="radio" name="fmt" style="accent-color:var(--color-accent-purple)">
+                        <div style="display:flex; flex-direction:column">
+                            <span style="font-weight:700">PDF</span>
+                            <span style="font-size:12px; color:var(--text-muted)">Portable Document Format (Для печати)</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="button button--primary button--full-width" style="flex:1">
+                    <i data-lucide="download"></i> Export as SVG
+                </button>
+                <button class="button button--outline" onclick="closeModal('export-modal')">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="ai-modal">
+        <div class="modal__overlay" onclick="closeModal('ai-modal')"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <div>
+                    <h2 style="font-size:20px">AI Prompt</h2>
+                    <p style="font-size:13px; color:var(--text-muted)">Опишите процесс человеческим языком</p>
+                </div>
+                <button class="button--ghost" onclick="closeModal('ai-modal')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal__body">
+                <div style="display:flex; flex-direction:column; gap:15px">
+                    <div style="display:flex; align-items:center; gap:10px">
+                        <span style="font-size:14px; font-weight:600">Engine:</span>
+                        <select style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-light)">
+                            <option>GPT-4o (Visual-Optimized)</option>
+                            <option>Claude 3.5 Sonnet</option>
+                        </select>
+                    </div>
+                    <textarea placeholder="Например: Создай схему заказа пиццы, где есть выбор оплаты и проверка наличия ингредиентов..." style="width:100%; height:120px; padding:12px; border-radius:8px; border:1px solid var(--border-light); resize:none; font-family:inherit"></textarea>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="button button--primary" style="flex:1"><i data-lucide="sparkles"></i> Generate Diagram</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            lucide.createIcons();
+
+            window.openModal = (id) => {
+                document.getElementById(id).classList.add('is-active');
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.closeModal = (id) => {
+                document.getElementById(id).classList.remove('is-active');
+                document.body.style.overflow = '';
+            };
+
+            document.getElementById('help-trigger').addEventListener('click', () => openModal('help-modal'));
+
+            const burger = document.getElementById('burger-trigger');
+            const drawer = document.getElementById('mobile-drawer');
+            const drawerClose = document.getElementById('drawer-close');
+
+            burger.addEventListener('click', () => drawer.classList.add('is-open'));
+            drawerClose.addEventListener('click', () => drawer.classList.remove('is-open'));
+
+            const tabs = document.querySelectorAll('.workspace__tab');
+            const editorSec = document.getElementById('editor-section');
+            const previewSec = document.getElementById('preview-section');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('is-active'));
+                    tab.classList.add('is-active');
+                    
+                    if(tab.dataset.target === 'editor-section') {
+                        editorSec.style.display = 'flex';
+                        previewSec.style.display = 'none';
+                    } else {
+                        editorSec.style.display = 'none';
+                        previewSec.style.display = 'flex';
+                    }
+                });
+            });
+
+            const runButtons = [document.getElementById('run-main'), document.getElementById('run-fab')];
+            const output = document.getElementById('svg-output');
+
+            runButtons.forEach(btn => {
+                if(!btn) return;
+                btn.addEventListener('click', () => {
+                    const originalContent = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="animate-pulse">Rendering...</span>';
+                    output.style.opacity = '0.3';
+                    output.style.filter = 'blur(2px)';
+
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = originalContent;
+                        output.style.opacity = '1';
+                        output.style.filter = 'none';
+                        console.log('Diagram compiled successfully.');
+                    }, 1000);
+                });
+            });
+
+            const textarea = document.getElementById('code-input');
+            const lineNumbers = document.getElementById('line-numbers');
+
+            textarea.addEventListener('input', () => {
+                const lines = textarea.value.split('\n').length;
+                lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => `<div>${i+1}</div>`).join('');
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Escape') {
+                document.querySelectorAll('.modal.is-active').forEach(m => m.classList.remove('is-active'));
+            }
+        });
+    </script>
 </body>
 </html>
