@@ -1,100 +1,212 @@
-const buttonElementToOpenAiAssistantSideDrawer = document.getElementById("ai-assistant-trigger");
-const buttonElementToCloseAiAssistantSideDrawer = document.getElementById("ai-assistant-close-button-action");
-const containerElementForAiAssistantSideDrawer = document.getElementById("ai-assistant-side-drawer-panel");
+/**
+ * ==========================================================================
+ * script.js
+ * Основной управляющий скрипт DiagramCode IDE.
+ * Реализует логику редактора, модальных окон и адаптивного интерфейса.
+ * ==========================================================================
+ */
 
-const buttonElementToOpenExportSettingsModalWindow = document.getElementById("export-dialog-trigger");
-const buttonElementToCloseExportSettingsModalWindow = document.getElementById("export-dialog-close-button-action");
-const containerElementForExportSettingsModalWindow = document.getElementById("export-options-modal-window-container");
+document.addEventListener('DOMContentLoaded', () => {
+    
+    /**
+     * 1. УПРАВЛЕНИЕ МОДАЛЬНЫМИ ОКНАМИ (MODALS)
+     * Реализует открытие/закрытие окон с поддержкой доступности и анимаций.
+     */
+    const modalTriggers = document.querySelectorAll('[aria-controls]');
+    
+    // Функция открытия модального окна
+    window.openModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('modal--active', 'is-active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden'; // Блокировка прокрутки основного контента
+            
+            // Фокусируемся на первом интерактивном элементе для Accessibility
+            const firstInput = modal.querySelector('input, textarea, select, button');
+            if (firstInput) setTimeout(() => firstInput.focus(), 300);
+        }
+    };
 
-const buttonElementToChangeDiagramNotationType = document.getElementById("notation-selector-trigger");
-const textElementDisplayingActiveNotationValue = document.querySelector(".dropdown-active-value-text-dynamic");
+    // Функция закрытия модального окна
+    window.closeModal = (modalOrId) => {
+        const modal = typeof modalOrId === 'string' ? document.getElementById(modalOrId) : modalOrId;
+        if (modal) {
+            modal.classList.remove('modal--active', 'is-active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = ''; // Возвращение прокрутки
+        }
+    };
 
-const buttonElementToExecuteDiagramRenderingProcess = document.querySelector(".toolbar-action-button-to-execute-rendering");
-const containerElementForDiagramVisualizationOutput = document.querySelector(".diagram-canvas-svg-rendering-wrapper");
-const textareaElementForUserDiagramSourceCode = document.querySelector(".editor-source-code-text-input-field");
+    // Слушатели для кнопок открытия через атрибуты ARIA
+    modalTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            const controls = trigger.getAttribute('aria-controls');
+            // Игнорируем бургер-меню, так как у него своя логика Drawer
+            if (controls && !['mobile-menu', 'mobile-drawer', 'burger-toggle'].includes(controls)) {
+                e.preventDefault();
+                openModal(controls);
+            }
+        });
+    });
 
-function changeVisibilityStatusOfUserInterfaceElement(userInterfaceElement, makeVisible) {
-  if (makeVisible) {
-    userInterfaceElement.classList.remove("hidden-interface-element");
-    userInterfaceElement.style.display = "flex";
-  } else {
-    userInterfaceElement.classList.add("hidden-interface-element");
-    userInterfaceElement.style.display = "none";
-  }
-}
+    // Делегирование событий для закрытия (оверлей, крестик, кнопки отмены)
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal__overlay')) {
+            closeModal(e.target.closest('.modal'));
+        }
+        if (e.target.closest('.modal__close') || e.target.hasAttribute('data-close')) {
+            const modal = e.target.closest('.modal');
+            closeModal(modal);
+        }
+    });
 
-function executeVisualRenderingSimulationForDiagram() {
-  containerElementForDiagramVisualizationOutput.style.transition = "opacity 0.3s ease-in-out";
-  containerElementForDiagramVisualizationOutput.style.opacity = "0.2";
+    /**
+     * 2. МОБИЛЬНОЕ МЕНЮ (SIDE DRAWER)
+     * Реализация выезжающей панели управления.
+     */
+    const burgerBtn = document.getElementById('burger-btn') || document.getElementById('burger-trigger');
+    const mobileMenu = document.getElementById('mobile-menu') || document.getElementById('mobile-drawer');
+    const menuLinks = document.querySelectorAll('.header__menu-item, .header__menu-btn');
 
-  setTimeout(function restoreDiagramAppearanceAfterSimulatedDelay() {
-    containerElementForDiagramVisualizationOutput.style.opacity = "1";
-    console.log("Интерфейс: Визуализация успешно обновлена для кода: " + textareaElementForUserDiagramSourceCode.value);
-  }, 450);
-}
+    if (burgerBtn && mobileMenu) {
+        burgerBtn.addEventListener('click', () => {
+            const isOpen = mobileMenu.classList.toggle('is-open');
+            burgerBtn.setAttribute('aria-expanded', isOpen);
+            
+            // Анимация иконок бургера, если они есть
+            const lines = burgerBtn.querySelectorAll('span');
+            if (lines.length === 3) {
+                lines[0].style.transform = isOpen ? 'rotate(45deg) translate(5px, 5px)' : '';
+                lines[1].style.opacity = isOpen ? '0' : '1';
+                lines[2].style.transform = isOpen ? 'rotate(-45deg) translate(7px, -6px)' : '';
+            }
+        });
+    }
 
-function handleUserActionOpenAiAssistant() {
-  changeVisibilityStatusOfUserInterfaceElement(containerElementForAiAssistantSideDrawer, true);
-}
+    // Закрытие меню при клике на пункт
+    menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.remove('is-open');
+            if (burgerBtn) burgerBtn.setAttribute('aria-expanded', 'false');
+        });
+    });
 
-function handleUserActionCloseAiAssistant() {
-  changeVisibilityStatusOfUserInterfaceElement(containerElementForAiAssistantSideDrawer, false);
-}
+    /**
+     * 3. УЛУЧШЕННЫЙ РЕДАКТОР КОДА
+     * Синхронизация строк, прокрутки и автосохранение.
+     */
+    const editorTextarea = document.getElementById('dsl-input') || document.getElementById('code-input');
+    const lineNumbersContainer = document.getElementById('line-numbers') || document.querySelector('.editor__gutter');
 
-function handleUserActionOpenExportSettings() {
-  changeVisibilityStatusOfUserInterfaceElement(containerElementForExportSettingsModalWindow, true);
-}
+    if (editorTextarea && lineNumbersContainer) {
+        
+        // Функция обновления счетчика строк
+        const updateLineNumbers = () => {
+            const lines = editorTextarea.value.split('\n');
+            lineNumbersContainer.innerHTML = lines
+                .map((_, i) => `<div class="editor__line-number">${i + 1}</div>`)
+                .join('');
+        };
 
-function handleUserActionCloseExportSettings() {
-  changeVisibilityStatusOfUserInterfaceElement(containerElementForExportSettingsModalWindow, false);
-}
+        // СИНХРОНИЗАЦИЯ ПРОКРУТКИ (Важно для длинного кода)
+        editorTextarea.addEventListener('scroll', () => {
+            lineNumbersContainer.scrollTop = editorTextarea.scrollTop;
+        });
 
-function handleUserActionSwitchDiagramNotation() {
-  const currentNotationNameValue = textElementDisplayingActiveNotationValue.textContent;
-  
-  if (currentNotationNameValue === "Mermaid") {
-    textElementDisplayingActiveNotationValue.textContent = "PlantUML";
-  } else if (currentNotationNameValue === "PlantUML") {
-    textElementDisplayingActiveNotationValue.textContent = "D2";
-  } else {
-    textElementDisplayingActiveNotationValue.textContent = "Mermaid";
-  }
-}
+        // Обработка ввода
+        editorTextarea.addEventListener('input', () => {
+            updateLineNumbers();
+            // Автосохранение в LocalStorage (Лабораторная 2/4 бонус)
+            localStorage.setItem('diagram_code_buffer', editorTextarea.value);
+        });
 
-function handleMouseClickEventsOutsideOfModalWindows(mouseClickEventInformation) {
-  const userClickedDirectlyOnExportModalOverlay = mouseClickEventInformation.target === containerElementForExportSettingsModalWindow;
+        // Поддержка клавиши TAB
+        editorTextarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = editorTextarea.selectionStart;
+                const end = editorTextarea.selectionEnd;
+                editorTextarea.value = editorTextarea.value.substring(0, start) + "    " + editorTextarea.value.substring(end);
+                editorTextarea.selectionStart = editorTextarea.selectionEnd = start + 4;
+            }
+        });
 
-  if (userClickedDirectlyOnExportModalOverlay) {
-    handleUserActionCloseExportSettings();
-  }
-}
+        // Восстановление кода при загрузке
+        const savedCode = localStorage.getItem('diagram_code_buffer');
+        if (savedCode) {
+            editorTextarea.value = savedCode;
+        }
 
-function initializeAllApplicationInterfaceInteractions() {
-  if (buttonElementToOpenAiAssistantSideDrawer) {
-    buttonElementToOpenAiAssistantSideDrawer.addEventListener("click", handleUserActionOpenAiAssistant);
-  }
+        updateLineNumbers();
+    }
 
-  if (buttonElementToCloseAiAssistantSideDrawer) {
-    buttonElementToCloseAiAssistantSideDrawer.addEventListener("click", handleUserActionCloseAiAssistant);
-  }
+    /**
+     * 4. ГОРЯЧИЕ КЛАВИШИ (HOTKEYS)
+     * Улучшает UX для опытных пользователей (ЛР4).
+     */
+    document.addEventListener('keydown', (e) => {
+        // Alt + R или Ctrl + Enter для запуска (Run)
+        if ((e.altKey && e.code === 'KeyR') || (e.ctrlKey && e.code === 'Enter')) {
+            e.preventDefault();
+            const runBtn = document.getElementById('run-main') || document.querySelector('.button--run');
+            if (runBtn) runBtn.click();
+        }
+        
+        // Escape для закрытия всего
+        if (e.key === 'Escape') {
+            const activeModal = document.querySelector('.modal.is-active, .modal.modal--active');
+            if (activeModal) closeModal(activeModal);
+            if (mobileMenu) mobileMenu.classList.remove('is-open');
+        }
 
-  if (buttonElementToOpenExportSettingsModalWindow) {
-    buttonElementToOpenExportSettingsModalWindow.addEventListener("click", handleUserActionOpenExportSettings);
-  }
+        // Ctrl + S для "сохранения"
+        if (e.ctrlKey && e.code === 'KeyS') {
+            e.preventDefault();
+            showNotification('Project saved to local storage');
+        }
+    });
 
-  if (buttonElementToCloseExportSettingsModalWindow) {
-    buttonElementToCloseExportSettingsModalWindow.addEventListener("click", handleUserActionCloseExportSettings);
-  }
+    /**
+     * 5. СИСТЕМА УВЕДОМЛЕНИЙ (TOASTS)
+     */
+    function showNotification(message) {
+        let toast = document.getElementById('app-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'app-notification';
+            toast.style.cssText = `
+                position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+                background: #030213; color: white; padding: 10px 20px; border-radius: 20px;
+                font-size: 13px; z-index: 9999; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+            `;
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 2500);
+    }
 
-  if (buttonElementToChangeDiagramNotationType) {
-    buttonElementToChangeDiagramNotationType.addEventListener("click", handleUserActionSwitchDiagramNotation);
-  }
+    /**
+     * 6. ИМИТАЦИЯ ЭКСПОРТА (EXPORT LOGIC)
+     */
+    const exportBtn = document.querySelector('#export-modal .button--primary');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            const format = document.querySelector('input[name="fmt"]:checked')?.value || 'svg';
+            exportBtn.disabled = true;
+            exportBtn.textContent = 'Preparing...';
+            
+            setTimeout(() => {
+                showNotification(`Diagram exported successfully as ${format.toUpperCase()}`);
+                exportBtn.disabled = false;
+                exportBtn.textContent = `Export as ${format.toUpperCase()}`;
+                closeModal('export-modal');
+            }, 1500);
+        });
+    }
 
-  if (buttonElementToExecuteDiagramRenderingProcess) {
-    buttonElementToExecuteDiagramRenderingProcess.addEventListener("click", executeVisualRenderingSimulationForDiagram);
-  }
-
-  window.addEventListener("click", handleMouseClickEventsOutsideOfModalWindows);
-}
-
-document.addEventListener("DOMContentLoaded", initializeAllApplicationInterfaceInteractions);
+    // Инициализация иконок
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+});

@@ -1,15 +1,90 @@
-ЦВЕТОВАЯ ПАЛИТРА
+=========================================
+DESIGN TOKENS : VISUAL DSL DIAGRAMMER
 
-Black (Editor Background): #1E1E1E
-White (Canvas Background): #FFFFFF
-Gray (Border/Secondary): #E5E7EB
-Purple (AI Accent): #8B5CF6
-Blue (Primary Buttons): #3B82F6
-Green (Success): #10B981
-Red (Error/Debug): #EF4444
-Yellow (Decision): #F59E0B
+Проект: DiagramCode (Вариант 13)
+Платформа: SaaS Web Application
+Методология: Mobile-First / Desktop-First
 
-ШРИФТЫ
+--- 1. ЦВЕТОВАЯ ПАЛИТРА (COLORS) ---
 
-Интерфейс: Inter (Sans-serif)
-Код: Source Code Pro (Monospace)
+[Фоны и поверхности]
+
+Editor Background:  #1E1E1E (Темный фон для редактора кода)
+
+Canvas Background:  #FFFFFF (Чистый белый для холста диаграммы)
+
+Preview UI Overlay: #F9FAFB (Светло-серый фон вне холста)
+
+[Текст]
+
+Text Main:          #1E293B (Основной темный текст, Slate 800)
+
+Text Muted:         #64748B (Второстепенный текст, Slate 500)
+
+Text Inverted:      #FFFFFF (Белый текст для кнопок)
+
+[Акценты и брендинг]
+
+Action Blue:        #3B82F6 (Основной цвет действий, Blue 500)
+
+AI Purple:          #8B5CF6 (Цвет кнопок искусственного интеллекта, Violet 500)
+
+UI Border:          #E5E7EB (Светло-серые рамки и разделители, Gray 200)
+
+[Семантические цвета (Status)]
+
+Success:            #10B981 (Зеленый - Успешно подключено)
+
+Warning:            #F59E0B (Оранжевый - Ожидание/Предупреждение)
+
+Error:              #EF4444 (Красный - Ошибка генерации)
+
+--- 2. ТИПОГРАФИКА (TYPOGRAPHY) ---
+
+[UI Font (Интерфейс)]
+
+Семейство: "Inter", system-ui, sans-serif
+
+Веса: 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold)
+
+Базовый размер: 16px (1rem)
+
+[Mono Font (Редактор кода)]
+
+Семейство: "Source Code Pro", monospace
+
+Веса: 400 (Regular), 500 (Medium)
+
+Базовый размер: 14px (0.875rem)
+
+--- 3. ГЕОМЕТРИЯ И РАЗМЕРЫ (SPATIAL & SIZING) ---
+
+[Сетка и layout]
+
+Header Height:      64px (4rem)
+
+Footer Height:      40px (2.5rem)
+
+Sidebar Width:      450px (Для десктопа)
+
+[Скругления (Border Radius)]
+
+Radius Standard:    6px (0.375rem) - Кнопки, инпуты, селекторы
+
+Radius Large:       16px (1rem) - Модальные окна, канвас
+
+[Отступы (Spacing System)]
+
+Small:              8px (0.5rem)
+
+Base:               16px (1rem)
+
+Large:              24px (1.5rem)
+
+X-Large:            32px (2rem)
+
+[Переходы (Transitions)]
+
+Base Speed:         0.3s
+
+Easing:             ease-in-out

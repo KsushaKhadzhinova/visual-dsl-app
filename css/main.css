@@ -1,0 +1,244 @@
+/* ==========================================================================
+   main.css
+   Стили основной рабочей области: редактор кода, холст, табы (Mobile First)
+   Блоки: workspace, editor, preview
+   ========================================================================== */
+
+/* --- 1. Основной контейнер (Mobile First: Flexbox) --- */
+.workspace {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Предотвращаем выход контента за пределы */
+    position: relative;
+    background-color: var(--color-bg-white);
+}
+
+/* --- 2. Логика переключения вкладок на мобильных (Чистый CSS) --- */
+/* Скрываем сами радиокнопки */
+.workspace__tab-radio {
+    display: none;
+}
+
+/* Контейнер для вкладок */
+.workspace__tabs {
+    display: flex;
+    background-color: var(--color-bg-canvas);
+    border-bottom: 1px solid var(--color-border-light);
+    flex-shrink: 0;
+    padding: var(--spacing-1); /* Отступ для эффекта сегментированного контроллера */
+}
+
+/* Сами кнопки вкладок (labels) */
+.workspace__tab-label {
+    flex: 1;
+    display: flex; /* Требование: Flexbox */
+    align-items: center; /* Требование: Выравнивание по центру */
+    justify-content: center; /* Требование: Выравнивание по центру */
+    gap: var(--spacing-2); /* Отступ для иконок */
+    padding: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
+}
+
+/* Стили иконок внутри вкладок */
+.workspace__tab-label svg {
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.workspace__tab-label:hover {
+    color: var(--color-text-main);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Стили активной вкладки через псевдокласс :checked */
+#tab-code:checked ~ .workspace__tabs [for="tab-code"],
+#tab-diagram:checked ~ .workspace__tabs [for="tab-diagram"] {
+    color: var(--color-accent-purple);
+    background-color: var(--color-bg-white);
+    box-shadow: var(--shadow-sm);
+}
+
+#tab-code:checked ~ .workspace__tabs [for="tab-code"] svg,
+#tab-diagram:checked ~ .workspace__tabs [for="tab-diagram"] svg {
+    color: var(--color-accent-purple);
+}
+
+/* Переключение видимости панелей на мобильных */
+#tab-code:checked ~ .workspace__editor {
+    display: flex;
+}
+#tab-code:checked ~ .workspace__preview {
+    display: none;
+}
+
+#tab-diagram:checked ~ .workspace__editor {
+    display: none;
+}
+#tab-diagram:checked ~ .workspace__preview {
+    display: flex;
+}
+
+/* --- 3. Левая панель: Редактор кода (Block: editor) --- */
+.workspace__editor {
+    flex: 1;
+    overflow: hidden; /* Скролл будет внутри .editor__content */
+    background-color: var(--color-bg-editor);
+    /* display: flex; - управляется через логику вкладок выше */
+}
+
+.editor__gutter {
+    min-width: 3.5rem;
+    padding: var(--spacing-4) 0;
+    text-align: right;
+    color: #52525b; /* Специфичный цвет для gutter */
+    user-select: none;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+}
+
+.editor__gutter span {
+    display: block;
+    padding: 0 var(--spacing-3);
+}
+
+.editor__code {
+    flex: 1;
+    padding: var(--spacing-4);
+    color: #d4d4d8;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    white-space: pre; /* Сохраняем форматирование кода */
+    overflow-x: auto;
+    overflow-y: auto;
+    outline: none;
+}
+
+/* Подсветка синтаксиса */
+.token-keyword { color: #c678dd; font-weight: var(--font-weight-semibold); }
+.token-variable { color: #e06c75; }
+.token-string { color: #98c379; }
+.token-bracket { color: #e5c07b; }
+.token-operator { color: #56b6c2; }
+
+/* --- 4. Правая панель: Холст (Block: preview) --- */
+.workspace__preview {
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-6);
+    background-color: var(--color-bg-canvas);
+    overflow: auto;
+}
+
+.preview__canvas-wrapper {
+    width: 100%;
+    max-width: 640px;
+    background-color: var(--color-bg-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-6);
+    border: 1px solid var(--color-border-light);
+}
+
+/* Стилизация SVG согласно дизайну */
+.preview__svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Настройка скругления блоков (10px) */
+.preview__svg rect {
+    rx: 10px;
+    ry: 10px;
+}
+
+/* Правильные шрифтовые веса для текста внутри SVG */
+.preview__svg text {
+    font-family: var(--font-sans);
+    user-select: none;
+}
+
+.preview__svg text[font-weight="600"] {
+    font-weight: 600;
+}
+
+.preview__svg text[font-weight="800"] {
+    font-weight: 800;
+}
+
+/* --- 5. Плавающая кнопка (FAB) для мобильных --- */
+.button--fab {
+    position: absolute;
+    bottom: var(--spacing-6);
+    right: var(--spacing-6);
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--radius-full);
+    background-color: #030213; /* Глубокий черный как в основном дизайне */
+    color: var(--color-bg-white);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.button--fab:hover {
+    transform: scale(1.05);
+}
+
+.button--fab:active {
+    transform: scale(0.95);
+}
+
+/* ==========================================================================
+   Адаптивность (Media Queries) - Desktop (min-width: 768px)
+   Использование CSS Grid Layout
+   ========================================================================== */
+@media screen and (min-width: 768px) {
+    /* Включаем CSS Grid для рабочей области */
+    .workspace {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Две равные колонки */
+        flex-direction: row; 
+    }
+
+    /* Скрываем мобильные вкладки и плавающую кнопку */
+    .workspace__tabs,
+    .hidden-desktop {
+        display: none !important;
+    }
+
+    /* На десктопе всегда видны обе панели */
+    .workspace__editor {
+        display: flex !important;
+        border-right: 1px solid var(--color-border-light);
+    }
+
+    .workspace__preview {
+        display: flex !important;
+    }
+    
+    /* Очистка враппера для десктопа */
+    .preview__canvas-wrapper {
+        box-shadow: none;
+        border: none;
+        background-color: transparent;
+        padding: 0;
+    }
+}

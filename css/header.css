@@ -1,0 +1,238 @@
+/* ==========================================================================
+   header.css
+   Стили для шапки сайта (Block: header)
+   Адаптация под макет: мобильный Drawer и всегда видимая кнопка Run
+   ========================================================================== */
+
+/* --- Базовые стили шапки (Mobile First) --- */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.5rem; /* 56px */
+    padding: 0 var(--spacing-4);
+    background-color: var(--color-bg-white);
+    border-bottom: 1px solid var(--color-border-light);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100; /* Высокий z-index для перекрытия контента при открытии Drawer */
+}
+
+/* --- Логотип --- */
+.header__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.header__logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background-color: var(--color-accent-purple-light);
+    color: var(--color-accent-purple);
+    border-radius: var(--radius-md);
+}
+
+.header__logo-text {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-main);
+    letter-spacing: -0.025em;
+    display: none; /* Скрыто на мобильных */
+}
+
+/* --- Навигация и контейнер кнопок --- */
+.header__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+/* --- Кнопка Run (Должна быть видна всегда согласно макету) --- */
+.button--run {
+    display: inline-flex !important; /* Принудительно показываем в шапке на мобильных */
+}
+
+/* --- Бургер кнопка (Mobile) --- */
+.header__burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1001; /* Поверх Drawer */
+    padding: 0;
+    margin-left: var(--spacing-2);
+}
+
+.header__burger-line {
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-text-main);
+    transition: var(--transition-base);
+}
+
+/* Анимация бургера в крестик при открытии */
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(2) {
+    opacity: 0;
+}
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* --- Мобильное меню (Side Drawer) --- */
+.header__menu {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Полностью скрыто справа */
+    width: 280px;
+    height: 100vh;
+    background-color: var(--color-bg-white);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    padding: 5rem var(--spacing-6) var(--spacing-6);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+/* Состояние открытого меню */
+.header__menu.is-open {
+    right: 0;
+}
+
+/* Группировка элементов в Drawer */
+.header__menu-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+/* Заголовки групп (Серый капс согласно макету) */
+.header__menu-title {
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-2);
+}
+
+/* Список действий в Drawer */
+.header__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+/* Стилизация селектора в меню */
+.header__select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.header__select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    background-color: var(--color-bg-canvas);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-main);
+    outline: none;
+    cursor: pointer;
+}
+
+/* Кастомная иконка действий внутри меню */
+.button--ghost {
+    justify-content: flex-start;
+    padding-left: 0;
+    font-size: var(--font-size-base);
+}
+
+/* Скрытие элементов, которые не нужны на мобильных */
+.hidden-mobile {
+    display: none !important;
+}
+
+/* ==========================================================================
+   Адаптивность - Desktop (min-width: 768px)
+   ========================================================================== */
+@media screen and (min-width: 768px) {
+    .header__logo-text {
+        display: block;
+    }
+
+    .header__burger {
+        display: none;
+    }
+
+    /* Превращаем Drawer обратно в горизонтальную панель в шапке */
+    .header__menu {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 0;
+        flex-direction: row;
+        box-shadow: none;
+        background: transparent;
+        gap: var(--spacing-4);
+        transition: none;
+    }
+
+    .header__menu-title {
+        display: none; /* Прячем "Notation" и "Actions" на десктопе */
+    }
+
+    .header__actions {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .header__select-wrapper {
+        width: auto;
+    }
+
+    .header__select {
+        width: auto;
+        padding: var(--spacing-1) 2.2rem var(--spacing-1) var(--spacing-3);
+        background-color: var(--color-bg-canvas);
+    }
+
+    /* Стрелочка для селектора только на десктопе */
+    .header__select-wrapper::after {
+        content: "";
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0.8rem;
+        height: 0.8rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        pointer-events: none;
+    }
+
+    .hidden-mobile {
+        display: inline-flex !important;
+    }
+
+    .button--ghost {
+        justify-content: center;
+        padding: var(--spacing-2) var(--spacing-4);
+    }
+}
