@@ -1,10 +1,3 @@
-/* ==========================================================================
-   header.css
-   Стили для шапки сайта (Block: header)
-   Адаптация под макет: мобильный Drawer и всегда видимая кнопка Run
-   ========================================================================== */
-
-/* --- Базовые стили шапки (Mobile First) --- */
 .header {
     display: flex;
     align-items: center;
@@ -15,10 +8,9 @@
     border-bottom: 1px solid var(--color-border-light);
     flex-shrink: 0;
     position: relative;
-    z-index: 100; /* Высокий z-index для перекрытия контента при открытии Drawer */
+    z-index: 100;
 }
 
-/* --- Логотип --- */
 .header__logo {
     display: flex;
     align-items: center;
@@ -41,22 +33,19 @@
     font-size: var(--font-size-lg);
     color: var(--color-text-main);
     letter-spacing: -0.025em;
-    display: none; /* Скрыто на мобильных */
+    display: none;
 }
 
-/* --- Навигация и контейнер кнопок --- */
 .header__nav {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
 }
 
-/* --- Кнопка Run (Должна быть видна всегда согласно макету) --- */
 .button--run {
-    display: inline-flex !important; /* Принудительно показываем в шапке на мобильных */
+    display: inline-flex !important;
 }
 
-/* --- Бургер кнопка (Mobile) --- */
 .header__burger {
     display: flex;
     flex-direction: column;
@@ -66,7 +55,7 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    z-index: 1001; /* Поверх Drawer */
+    z-index: 1001;
     padding: 0;
     margin-left: var(--spacing-2);
 }
@@ -78,7 +67,6 @@
     transition: var(--transition-base);
 }
 
-/* Анимация бургера в крестик при открытии */
 .header__burger[aria-expanded="true"] .header__burger-line:nth-child(1) {
     transform: translateY(6px) rotate(45deg);
 }
@@ -89,11 +77,10 @@
     transform: translateY(-6px) rotate(-45deg);
 }
 
-/* --- Мобильное меню (Side Drawer) --- */
 .header__menu {
     position: fixed;
     top: 0;
-    right: -100%; /* Полностью скрыто справа */
+    right: -100%;
     width: 280px;
     height: 100vh;
     background-color: var(--color-bg-white);
@@ -106,19 +93,16 @@
     z-index: 1000;
 }
 
-/* Состояние открытого меню */
 .header__menu.is-open {
     right: 0;
 }
 
-/* Группировка элементов в Drawer */
 .header__menu-group {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
 }
 
-/* Заголовки групп (Серый капс согласно макету) */
 .header__menu-title {
     font-size: 0.75rem;
     font-weight: var(--font-weight-bold);
@@ -128,14 +112,12 @@
     margin-bottom: var(--spacing-2);
 }
 
-/* Список действий в Drawer */
 .header__actions {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-1);
 }
 
-/* Стилизация селектора в меню */
 .header__select-wrapper {
     position: relative;
     width: 100%;
@@ -156,21 +138,16 @@
     cursor: pointer;
 }
 
-/* Кастомная иконка действий внутри меню */
 .button--ghost {
     justify-content: flex-start;
     padding-left: 0;
     font-size: var(--font-size-base);
 }
 
-/* Скрытие элементов, которые не нужны на мобильных */
 .hidden-mobile {
     display: none !important;
 }
 
-/* ==========================================================================
-   Адаптивность - Desktop (min-width: 768px)
-   ========================================================================== */
 @media screen and (min-width: 768px) {
     .header__logo-text {
         display: block;
@@ -180,7 +157,6 @@
         display: none;
     }
 
-    /* Превращаем Drawer обратно в горизонтальную панель в шапке */
     .header__menu {
         position: static;
         width: auto;
@@ -194,7 +170,7 @@
     }
 
     .header__menu-title {
-        display: none; /* Прячем "Notation" и "Actions" на десктопе */
+        display: none;
     }
 
     .header__actions {
@@ -213,8 +189,7 @@
         background-color: var(--color-bg-canvas);
     }
 
-    /* Стрелочка для селектора только на десктопе */
-    .header__select-wrapper::after {
+       .header__select-wrapper::after {
         content: "";
         position: absolute;
         right: 0.75rem;

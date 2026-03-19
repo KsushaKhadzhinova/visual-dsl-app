@@ -1,48 +1,32 @@
-/**
- * ==========================================================================
- * script.js
- * Основной управляющий скрипт DiagramCode IDE.
- * Реализует логику редактора, модальных окон и адаптивного интерфейса.
- * ==========================================================================
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    
-    /**
-     * 1. УПРАВЛЕНИЕ МОДАЛЬНЫМИ ОКНАМИ (MODALS)
-     * Реализует открытие/закрытие окон с поддержкой доступности и анимаций.
-     */
+
     const modalTriggers = document.querySelectorAll('[aria-controls]');
-    
-    // Функция открытия модального окна
+
     window.openModal = (modalId) => {
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.add('modal--active', 'is-active');
             modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden'; // Блокировка прокрутки основного контента
-            
-            // Фокусируемся на первом интерактивном элементе для Accessibility
+            document.body.style.overflow = 'hidden'; 
+
             const firstInput = modal.querySelector('input, textarea, select, button');
             if (firstInput) setTimeout(() => firstInput.focus(), 300);
         }
     };
 
-    // Функция закрытия модального окна
     window.closeModal = (modalOrId) => {
         const modal = typeof modalOrId === 'string' ? document.getElementById(modalOrId) : modalOrId;
         if (modal) {
             modal.classList.remove('modal--active', 'is-active');
             modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = ''; // Возвращение прокрутки
+            document.body.style.overflow = '';
         }
     };
 
-    // Слушатели для кнопок открытия через атрибуты ARIA
     modalTriggers.forEach(trigger => {
         trigger.addEventListener('click', (e) => {
             const controls = trigger.getAttribute('aria-controls');
-            // Игнорируем бургер-меню, так как у него своя логика Drawer
+
             if (controls && !['mobile-menu', 'mobile-drawer', 'burger-toggle'].includes(controls)) {
                 e.preventDefault();
                 openModal(controls);
@@ -50,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Делегирование событий для закрытия (оверлей, крестик, кнопки отмены)
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal__overlay')) {
             closeModal(e.target.closest('.modal'));
@@ -61,10 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    /**
-     * 2. МОБИЛЬНОЕ МЕНЮ (SIDE DRAWER)
-     * Реализация выезжающей панели управления.
-     */
     const burgerBtn = document.getElementById('burger-btn') || document.getElementById('burger-trigger');
     const mobileMenu = document.getElementById('mobile-menu') || document.getElementById('mobile-drawer');
     const menuLinks = document.querySelectorAll('.header__menu-item, .header__menu-btn');
@@ -73,8 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         burgerBtn.addEventListener('click', () => {
             const isOpen = mobileMenu.classList.toggle('is-open');
             burgerBtn.setAttribute('aria-expanded', isOpen);
-            
-            // Анимация иконок бургера, если они есть
+
             const lines = burgerBtn.querySelectorAll('span');
             if (lines.length === 3) {
                 lines[0].style.transform = isOpen ? 'rotate(45deg) translate(5px, 5px)' : '';
@@ -84,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Закрытие меню при клике на пункт
     menuLinks.forEach(link => {
         link.addEventListener('click', () => {
             mobileMenu.classList.remove('is-open');
@@ -92,16 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    /**
-     * 3. УЛУЧШЕННЫЙ РЕДАКТОР КОДА
-     * Синхронизация строк, прокрутки и автосохранение.
-     */
     const editorTextarea = document.getElementById('dsl-input') || document.getElementById('code-input');
     const lineNumbersContainer = document.getElementById('line-numbers') || document.querySelector('.editor__gutter');
 
     if (editorTextarea && lineNumbersContainer) {
-        
-        // Функция обновления счетчика строк
+
         const updateLineNumbers = () => {
             const lines = editorTextarea.value.split('\n');
             lineNumbersContainer.innerHTML = lines
@@ -109,19 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 .join('');
         };
 
-        // СИНХРОНИЗАЦИЯ ПРОКРУТКИ (Важно для длинного кода)
         editorTextarea.addEventListener('scroll', () => {
             lineNumbersContainer.scrollTop = editorTextarea.scrollTop;
         });
 
-        // Обработка ввода
         editorTextarea.addEventListener('input', () => {
             updateLineNumbers();
-            // Автосохранение в LocalStorage (Лабораторная 2/4 бонус)
+
             localStorage.setItem('diagram_code_buffer', editorTextarea.value);
         });
 
-        // Поддержка клавиши TAB
         editorTextarea.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
                 e.preventDefault();
@@ -132,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Восстановление кода при загрузке
         const savedCode = localStorage.getItem('diagram_code_buffer');
         if (savedCode) {
             editorTextarea.value = savedCode;
@@ -141,35 +109,26 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLineNumbers();
     }
 
-    /**
-     * 4. ГОРЯЧИЕ КЛАВИШИ (HOTKEYS)
-     * Улучшает UX для опытных пользователей (ЛР4).
-     */
     document.addEventListener('keydown', (e) => {
-        // Alt + R или Ctrl + Enter для запуска (Run)
+
         if ((e.altKey && e.code === 'KeyR') || (e.ctrlKey && e.code === 'Enter')) {
             e.preventDefault();
             const runBtn = document.getElementById('run-main') || document.querySelector('.button--run');
             if (runBtn) runBtn.click();
         }
         
-        // Escape для закрытия всего
         if (e.key === 'Escape') {
             const activeModal = document.querySelector('.modal.is-active, .modal.modal--active');
             if (activeModal) closeModal(activeModal);
             if (mobileMenu) mobileMenu.classList.remove('is-open');
         }
 
-        // Ctrl + S для "сохранения"
         if (e.ctrlKey && e.code === 'KeyS') {
             e.preventDefault();
             showNotification('Project saved to local storage');
         }
     });
 
-    /**
-     * 5. СИСТЕМА УВЕДОМЛЕНИЙ (TOASTS)
-     */
     function showNotification(message) {
         let toast = document.getElementById('app-notification');
         if (!toast) {
@@ -188,9 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toast.style.opacity = '0', 2500);
     }
 
-    /**
-     * 6. ИМИТАЦИЯ ЭКСПОРТА (EXPORT LOGIC)
-     */
     const exportBtn = document.querySelector('#export-modal .button--primary');
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
@@ -207,6 +163,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Инициализация иконок
     if (typeof lucide !== 'undefined') lucide.createIcons();
 });

@@ -1,11 +1,3 @@
-/* ==========================================================================
-   footer.css
-   Стили для подвала сайта (Status Bar)
-   Методология: BEM
-   Блок: status-bar
-   ========================================================================== */
-
-/* --- 1. Базовые стили подвала (Mobile First) --- */
 .status-bar {
     display: flex;
     align-items: center;
@@ -21,14 +13,12 @@
     user-select: none;
 }
 
-/* --- 2. Левая часть: Статус движка --- */
 .status-bar__info {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
 }
 
-/* Точка-индикатор */
 .status-bar__dot {
     width: 0.5rem;
     height: 0.5rem;
@@ -39,7 +29,6 @@
     transition: background-color 0.3s ease;
 }
 
-/* Активный статус с анимацией пульсации */
 .status-bar__dot--active {
     background-color: var(--color-success-green);
 }
@@ -69,9 +58,8 @@
     color: var(--color-text-main);
 }
 
-/* --- 3. Центральная часть: Автор (Ксения Хаджинова) --- */
 .status-bar__author {
-    display: none; /* Mobile First: скрываем на узких экранах */
+    display: none;
     align-items: center;
     gap: var(--spacing-2);
     color: var(--color-text-main);
@@ -92,7 +80,6 @@
     background-color: var(--color-bg-canvas);
 }
 
-/* --- 4. Правая часть: Мета-данные --- */
 .status-bar__meta {
     display: flex;
     align-items: center;
@@ -104,12 +91,10 @@
     margin: 0 var(--spacing-1);
 }
 
-/* --- 5. Адаптивность (Media Queries) --- */
 
-/* Планшеты и Десктопы */
 @media screen and (min-width: 640px) {
     .status-bar__author {
-        display: flex; /* Показываем автора на экранах шире 640px */
+        display: flex;
     }
 }
 
@@ -124,7 +109,6 @@
     }
 }
 
-/* Скрытие элементов, если экран совсем маленький */
 @media screen and (max-width: 380px) {
     .status-bar__meta {
         display: none;
