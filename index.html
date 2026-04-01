@@ -2,949 +2,469 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="DiagramCode — профессиональная SaaS-платформа для моделирования диаграмм из программного кода (DSL).">
-    <meta name="author" content="Ксения Хаджинова">
-    <title>DiagramCode — Visual DSL Diagrammer IDE</title>
+    <title>DiagramCode — Visual DSL IDE</title>
     
-    <!-- Подключение шрифтов и иконок -->
+    <!-- Шрифты и иконки -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         /* ==========================================================================
-           1. ПЕРЕМЕННЫЕ (DESIGN TOKENS)
+           1. ПЕРЕМЕННЫЕ И ДИЗАЙН-ТОКЕНЫ
            ========================================================================== */
         :root {
-            --color-primary: #030213;
-            --color-accent-purple: #8b5cf6;
-            --color-accent-blue: #3b82f6;
-            --color-success: #10b981;
-            --color-warning: #f59e0b;
-            --color-danger: #ef4444;
-            
             --bg-page: #ffffff;
-            --bg-canvas: #f9fafb;
             --bg-editor: #1e1e1e;
-            --bg-modal-footer: #fcfcfd;
-            
-            --text-main: #1e293b;
+            --bg-canvas: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
             --text-muted: #64748b;
-            --text-on-dark: #d4d4d8;
-            
-            --border-light: rgba(0, 0, 0, 0.1);
-            --border-editor: #3e3e3e;
-            
-            --header-h: 64px;
-            --footer-h: 40px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --radius-full: 9999px;
-            
+            --btn-black: #0f172a;
+            --btn-gray: #64748b;
+            --logo-purple: #7c3aed;
+            --accent-purple: #8b5cf6;
             --font-sans: 'Inter', system-ui, sans-serif;
             --font-mono: 'Source Code Pro', monospace;
-            
-            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* ==========================================================================
-           2. СБРОС И БАЗОВЫЕ СТИЛИ
-           ========================================================================== */
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body.page {
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
             font-family: var(--font-sans);
             color: var(--text-main);
-            background-color: var(--bg-page);
+            background: var(--bg-page);
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
-
-        .skip-link {
-            position: fixed;
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--color-primary);
-            color: white;
-            padding: 12px 24px;
-            z-index: 10000;
-            text-decoration: none;
-            border-radius: 0 0 10px 10px;
-            font-weight: 600;
-            transition: top 0.3s;
-        }
-
-        .skip-link:focus { top: 0; }
 
         /* ==========================================================================
-           3. КОМПОНЕНТЫ: КНОПКИ
+           2. ВЕРХНЯЯ ПАНЕЛЬ МЕНЮ (VIEW, GO, RUN)
            ========================================================================== */
-        .button {
-            display: inline-flex;
+        .menubar {
+            height: 32px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            font-weight: 500;
+            padding: 0 12px;
+            gap: 4px;
+            z-index: 110;
+        }
+        .menubar__item {
+            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 4px;
             cursor: pointer;
-            border: 1px solid transparent;
-            background: transparent;
-            transition: var(--transition-base);
-            white-space: nowrap;
-            user-select: none;
-            font-family: inherit;
-        }
-
-        .button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .button--primary {
-            background-color: var(--color-primary);
-            color: white;
-        }
-
-        .button--primary:hover:not(:disabled) {
-            background-color: #1a1a2e;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .button--outline {
-            border-color: var(--border-light);
             color: var(--text-main);
+            transition: background 0.2s;
         }
-
-        .button--outline:hover:not(:disabled) {
-            background-color: var(--bg-canvas);
-        }
-
-        .button--ghost {
-            color: var(--text-muted);
-        }
-
-        .button--ghost:hover:not(:disabled) {
-            color: var(--color-primary);
-            background-color: var(--bg-canvas);
-        }
-
-        .button--ai {
-            background-color: #f5f3ff;
-            color: var(--color-accent-purple);
-            border-color: #ddd6fe;
-        }
-
-        .button--ai:hover:not(:disabled) {
-            background-color: #ede9fe;
-        }
+        .menubar__item:hover { background: #f1f5f9; }
+        .menubar__item--active { background: #f1f5f9; font-weight: 600; }
 
         /* ==========================================================================
-           4. ШАПКА САЙТА (HEADER)
+           3. ГЛАВНАЯ ШАПКА (TOOLBAR)
            ========================================================================== */
         .header {
-            height: var(--header-h);
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-light);
-            background: white;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: #ffffff;
             z-index: 100;
         }
+        .header__left, .header__right { display: flex; align-items: center; gap: 8px; }
 
-        .header__logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .header__logo-box {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .logo-box {
+            width: 28px; height: 28px;
+            background-color: var(--logo-purple);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
             color: white;
         }
+        .logo-text { font-weight: 700; font-size: 16px; margin-right: 12px; }
 
-        .header__title {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+        .notation-select {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border: 1px solid var(--border-color);
+            border-radius: 6px; font-size: 13px; font-weight: 500;
+            background: white; cursor: pointer;
         }
+        .notation-select select { appearance: none; border: none; outline: none; font-family: inherit; font-weight: 600; cursor: pointer; }
 
-        .header__nav {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 6px; font-size: 13px;
+            font-weight: 600; cursor: pointer; border: 1px solid var(--border-color);
+            background: white; transition: all 0.2s; font-family: inherit;
         }
+        .btn--black { background: var(--btn-black); color: white; border-color: var(--btn-black); }
+        .btn--black:hover { background: #1e293b; }
+        .btn--ai { background: #f5f3ff; color: var(--accent-purple); border-color: #ddd6fe; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .header__select-wrapper {
-            position: relative;
-            margin-right: 8px;
-        }
-
-        .header__select {
-            appearance: none;
-            background-color: var(--bg-canvas);
-            border: 1px solid var(--border-light);
-            padding: 6px 32px 6px 12px;
-            border-radius: var(--radius-md);
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .header__burger {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            width: 24px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 4px;
-        }
-
-        .header__burger span {
-            display: block;
-            width: 100%;
-            height: 2px;
-            background: var(--color-primary);
-            transition: var(--transition-base);
-        }
-
-        .mobile-drawer {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 280px;
-            height: 100vh;
-            background: white;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-            z-index: 1000;
-            padding: 40px 24px;
-            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .mobile-drawer.is-open { right: 0; }
-
-        /* ==========================================================================
-           5. РАБОЧАЯ ОБЛАСТЬ (WORKSPACE)
-           ========================================================================== */
-        .workspace {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            overflow: hidden;
-        }
-
-        .editor {
-            background-color: var(--bg-editor);
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--color-editor-border);
-        }
-
-        .editor__container {
-            display: flex;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .editor__gutter {
-            width: 50px;
-            background: rgba(0,0,0,0.2);
-            padding: 20px 0;
-            text-align: right;
-            padding-right: 12px;
-            color: var(--color-editor-line-numbers);
-            font-family: var(--font-mono);
-            font-size: 13px;
-            line-height: 1.6;
-            user-select: none;
-            overflow-y: hidden;
-        }
-
-        .editor__textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            padding: 20px;
-            color: var(--text-on-dark);
-            font-family: var(--font-mono);
-            font-size: 14px;
-            line-height: 1.6;
-            resize: none;
-            white-space: pre;
-            overflow: auto;
-        }
-
-        .preview {
-            background-color: var(--bg-canvas);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            position: relative;
-            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-            background-size: 20px 20px;
-            overflow: hidden;
-        }
-
-        .preview__wrapper {
-            background: white;
-            padding: 30px;
-            border-radius: var(--radius-lg);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            max-width: 100%;
-            max-height: 100%;
-            overflow: auto;
-            border: 1px solid var(--border-light);
-            transition: all 0.3s ease;
-        }
-
-        .preview__svg {
-            display: block;
-            height: auto;
-            max-width: 100%;
+        .btn-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border: none; background: transparent;
+            color: var(--text-muted); border-radius: 50%; cursor: pointer;
         }
 
         /* ==========================================================================
-           6. МОДАЛЬНЫЕ ОКНА И ФОРМЫ
+           4. РАБОЧАЯ ОБЛАСТЬ И ТАБЫ
            ========================================================================== */
-        .modal {
-            position: fixed;
-            inset: 0;
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            visibility: hidden;
-            opacity: 0;
-            transition: var(--transition-base);
+        .workspace { flex: 1; display: flex; overflow: hidden; position: relative; }
+        .editor-section, .preview-section {
+            width: 100%; height: 100%; display: flex; flex-direction: column;
+            position: absolute; inset: 0; background: var(--bg-editor);
+            transition: opacity 0.2s;
         }
+        .preview-section { background: var(--bg-canvas); }
 
-        .modal.is-active {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .modal__overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(3, 2, 19, 0.4);
-            backdrop-filter: blur(4px);
-        }
-
-        .modal__content {
-            position: relative;
-            background: white;
-            width: 100%;
-            max-width: 440px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-modal);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transform: translateY(20px);
-            transition: var(--transition-base);
-        }
-
-        .modal.is-active .modal__content {
-            transform: translateY(0);
-        }
-
-        .modal__header {
-            padding: 24px;
-            border-bottom: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .modal__body {
-            padding: 24px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .modal__footer {
-            padding: 20px 24px;
-            background: var(--bg-modal-footer);
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-label {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus, .form-textarea:focus {
-            border-color: var(--color-accent-purple);
-        }
-
-        .error-message {
-            color: var(--color-danger);
-            font-size: 12px;
-            margin-top: 4px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ==========================================================================
-           7. АДАПТИВНОСТЬ
-           ========================================================================== */
+        /* Мобильные вкладки */
         @media (max-width: 768px) {
-            .workspace { grid-template-columns: 1fr; }
-            .header__nav .button:not(.button--run) { display: none; }
-            .header__burger { display: flex; }
+            .tabs-wrapper { padding: 8px 16px; border-bottom: 1px solid var(--border-color); background: #ffffff; }
+            .mobile-tabs { display: flex; background: #f1f5f9; border-radius: 10px; padding: 4px; gap: 4px; }
+            .tab-btn { flex: 1; padding: 8px; font-size: 14px; font-weight: 600; border-radius: 8px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+            .tab-btn.is-active { background: white; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+            
+            .workspace.show-code .editor-section { opacity: 1; z-index: 2; pointer-events: auto; }
+            .workspace.show-code .preview-section { opacity: 0; z-index: 1; pointer-events: none; }
+            .workspace.show-diagram .editor-section { opacity: 0; z-index: 1; pointer-events: none; }
+            .workspace.show-diagram .preview-section { opacity: 1; z-index: 2; pointer-events: auto; }
             .desktop-only { display: none !important; }
-            .workspace__tabs {
-                display: flex;
-                background: var(--bg-canvas);
-                border-bottom: 1px solid var(--border-light);
-            }
-            .workspace__tab {
-                flex: 1;
-                padding: 12px;
-                text-align: center;
-                font-size: 14px;
-                font-weight: 600;
-                color: var(--text-muted);
-                cursor: pointer;
-                border-bottom: 2px solid transparent;
-            }
-            .workspace__tab.is-active {
-                color: var(--color-accent-purple);
-                border-bottom-color: var(--color-accent-purple);
-                background: white;
-            }
         }
+
+        @media (min-width: 769px) {
+            .tabs-wrapper { display: none; }
+            .workspace { flex-direction: row; }
+            .editor-section, .preview-section { position: static; opacity: 1 !important; width: 50%; pointer-events: auto !important; }
+            .editor-section { border-right: 1px solid #333; }
+        }
+
+        /* Редактор */
+        .editor-container { display: flex; height: 100%; overflow: hidden; }
+        .line-numbers { width: 48px; padding: 20px 0; text-align: right; padding-right: 12px; color: #64748b; font-family: var(--font-mono); font-size: 14px; line-height: 1.6; user-select: none; }
+        .code-input { flex: 1; background: transparent; border: none; outline: none; padding: 20px 8px; color: #cbd5e1; font-family: var(--font-mono); font-size: 14px; line-height: 1.6; resize: none; overflow: auto; }
+
+        /* ==========================================================================
+           5. МОДАЛЬНЫЕ ОКНА (BOTTOM SHEETS)
+           ========================================================================== */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(2px); z-index: 2000; display: none; 
+            align-items: flex-end; justify-content: center; 
+        }
+        .modal-overlay.is-active { display: flex; }
+        .bottom-sheet { 
+            background: white; width: 100%; border-radius: 24px 24px 0 0; 
+            padding: 24px; transform: translateY(100%); 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            max-width: 600px; box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+        }
+        .modal-overlay.is-active .bottom-sheet { transform: translateY(0); }
+        
+        .sheet-handle { width: 48px; height: 5px; background: #e2e8f0; border-radius: 5px; margin: -12px auto 20px; }
+        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .modal-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; font-family: inherit; outline: none; background: #f8fafc; }
+        .form-textarea { height: 100px; resize: none; }
+
+        /* Кнопки в шторке */
+        .sheet-actions { display: flex; gap: 12px; }
+        .btn-sheet { flex: 1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: white; text-align: center; }
+        .btn-sheet--black { background: var(--btn-black); color: white; border: none; }
+        .btn-sheet--gray { background: var(--btn-gray); color: white; border: none; }
+
+        @media (min-width: 769px) {
+            .modal-overlay { align-items: center; }
+            .bottom-sheet { border-radius: 16px; transform: scale(0.95); bottom: auto; }
+            .modal-overlay.is-active .bottom-sheet { transform: scale(1); }
+            .sheet-handle { display: none; }
+        }
+
+        /* Уведомления */
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #030213; color: white; padding: 12px 24px; border-radius: 100px; font-size: 14px; font-weight: 500; z-index: 3000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
+<body>
 
-<body class="page" itemscope itemtype="https://schema.org/SoftwareApplication">
-    <meta itemprop="applicationCategory" content="DeveloperApplication">
-    <meta itemprop="operatingSystem" content="Web">
+    <!-- ВЕРХНЕЕ МЕНЮ (Desktop) -->
+    <nav class="menubar desktop-only">
+        <div class="menubar__item">File</div>
+        <div class="menubar__item">Edit</div>
+        <div class="menubar__item">Selection</div>
+        <div class="menubar__item">View</div>
+        <div class="menubar__item menubar__item--active">Go</div>
+        <div class="menubar__item">Run</div>
+        <div class="menubar__item">Terminal</div>
+        <div class="menubar__item">Help</div>
+    </nav>
 
-    <!-- Доступность -->
-    <a href="#main-content" class="skip-link">Перейти к контенту</a>
-
-    <!-- ШАПКА -->
+    <!-- ТУЛБАР -->
     <header class="header">
-        <div class="header__logo" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
-            <div class="header__logo-box">
-                <i data-lucide="box" size="20"></i>
-            </div>
-            <span class="header__title" itemprop="name">DiagramCode</span>
-        </div>
-
-        <nav class="header__nav" aria-label="Панель инструментов">
-            <div class="header__select-wrapper desktop-only">
-                <select class="header__select" id="notation-select">
-                    <option value="bpmn">BPMN 2.0</option>
-                    <option value="mermaid">Mermaid</option>
-                    <option value="plantuml">PlantUML</option>
+        <div class="header__left">
+            <div class="logo-box"><i data-lucide="x" stroke-width="3"></i></div>
+            <span class="logo-text">DiagramCode</span>
+            <div class="notation-select desktop-only" style="margin-left: 12px;">
+                <span>Notation:</span>
+                <select id="engine-selector">
+                    <option value="custom">Custom Engine</option>
+                    <option value="mermaid">Mermaid.js</option>
                 </select>
-                <i data-lucide="chevron-down" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--text-muted)" size="14"></i>
+                <i data-lucide="chevron-down" size="14"></i>
             </div>
-
-            <button class="button button--ghost desktop-only" aria-controls="help-modal">
-                <i data-lucide="help-circle" size="18"></i> Справка
-            </button>
-
-            <!-- Основная кнопка RUN -->
-            <button class="button button--primary button--run" id="run-main">
-                <i data-lucide="play" size="16"></i> Run
-            </button>
-
-            <button class="header__burger" id="burger-trigger" aria-label="Открыть меню">
-                <span></span><span></span><span></span>
-            </button>
-        </nav>
+        </div>
+        <div class="header__right">
+            <button class="btn btn--black" id="run-btn"><i data-lucide="play" size="14" fill="currentColor"></i> Run</button>
+            <button class="btn desktop-only" onclick="showToast('Project saved!')"><i data-lucide="save" size="14"></i> Save</button>
+            <button class="btn" onclick="openModal('export-modal')"><i data-lucide="download" size="14"></i> Export</button>
+            <button class="btn btn--ai" onclick="openModal('ai-modal')"><i data-lucide="sparkles" size="14"></i> AI Prompt</button>
+            <button class="btn-icon mobile-only" id="burger-trigger"><i data-lucide="menu" size="24"></i></button>
+        </div>
     </header>
 
-    <!-- МОБИЛЬНОЕ МЕНЮ (Drawer) -->
-    <aside class="mobile-drawer" id="mobile-drawer">
-        <div style="display:flex; justify-content:space-between; margin-bottom:30px">
-            <h3 style="font-size:22px">Меню</h3>
-            <button id="drawer-close" style="background:none; border:none; cursor:pointer"><i data-lucide="x"></i></button>
+    <!-- ТАБЫ (Mobile) -->
+    <div class="tabs-wrapper mobile-only">
+        <div class="mobile-tabs">
+            <button class="tab-btn is-active" data-tab="code"><i data-lucide="code" size="16"></i> Code</button>
+            <button class="tab-btn" data-tab="diagram"><i data-lucide="box" size="16"></i> Diagram</button>
         </div>
-        <div style="display:flex; flex-direction:column; gap:20px">
-            <div style="color:var(--text-muted); font-size:12px; font-weight:700; text-transform:uppercase">Действия</div>
-            <button class="button button--outline" style="justify-content:flex-start" aria-controls="export-modal"><i data-lucide="download"></i> Экспорт</button>
-            <button class="button button--ai" style="justify-content:flex-start" aria-controls="ai-modal"><i data-lucide="sparkles"></i> AI Ассистент</button>
-        </div>
-    </aside>
-
-    <!-- ТАБЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ -->
-    <div class="workspace__tabs" id="mobile-tabs" style="display:none">
-        <div class="workspace__tab is-active" data-target="editor-section">Code</div>
-        <div class="workspace__tab" data-target="preview-section">Diagram</div>
     </div>
 
     <!-- РАБОЧАЯ ОБЛАСТЬ -->
-    <main class="workspace" id="main-content">
-        <!-- Секция редактора -->
-        <section class="editor" id="editor-section">
-            <div class="editor__container">
-                <div class="editor__gutter" id="line-numbers">
-                    <!-- Генерируется через JS -->
-                </div>
-                <textarea class="editor__textarea" id="code-input" spellcheck="false" placeholder="Введите код диаграммы..."></textarea>
+    <main class="workspace show-code" id="workspace">
+        <section class="editor-section" id="editor-section">
+            <div class="editor-container">
+                <div class="line-numbers" id="line-numbers"></div>
+                <textarea class="code-input" id="code-input" spellcheck="false">graph TD
+Start[Начало] --> Check{Is it working?}
+Check -->|Yes| Great[Great!]
+Check -->|No| Debug[Debug]
+Debug --> Check
+Great --> End(Конец)</textarea>
             </div>
         </section>
 
-        <!-- Секция визуализации (Диаграмма) -->
-        <section class="preview" id="preview-section">
-            <div class="preview__wrapper" id="diagram-container">
-                <!-- Отрисовка SVG кодом -->
-                <svg viewBox="0 0 600 450" class="preview__svg" xmlns="http://www.w3.org/2000/svg" id="svg-output">
-                    <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
-                        </marker>
-                    </defs>
-                    <rect x="230" y="20" width="140" height="60" rx="10" fill="#3B82F6" />
-                    <text x="300" y="55" text-anchor="middle" fill="white" font-weight="600">Start</text>
-                    <path d="M300 80 L300 120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
-                    <polygon points="300,120 390,170 300,220 210,170" fill="#F59E0B" />
-                    <text x="300" y="175" text-anchor="middle" fill="#78350F" font-size="14" font-weight="800">Is it working?</text>
-                    <path d="M390 170 L480 170 L480 230" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
-                    <rect x="410" y="240" width="140" height="60" rx="10" fill="#10B981" />
-                    <text x="480" y="275" text-anchor="middle" fill="white" font-weight="600">Great!</text>
-                </svg>
+        <section class="preview-section" id="preview-section">
+            <div class="diagram-container" id="diagram-container">
+                <!-- SVG Рендерится здесь -->
             </div>
         </section>
     </main>
 
-    <!-- СТАТУС-БАР -->
-    <footer class="status-bar" style="height:var(--footer-h); border-top:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:var(--text-muted)">
-        <div style="display:flex; align-items:center; gap:8px">
-            <span style="width:8px; height:8px; border-radius:50%; background:var(--color-success)"></span>
-            Engine: Connected
+    <!-- ФУТЕР -->
+    <footer style="height: 32px; border-top: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 16px; font-size: 11px; color: var(--text-muted); background: #ffffff;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+            Engine: <span id="engine-name-status">Custom</span>
         </div>
-        <div style="display:flex; align-items:center; gap:8px">
-            <img src="https://ui-avatars.com/api/?name=Ksenia+Khadzhinova&background=030213&color=fff" alt="Ксения Хаджинова" style="width:20px; height:20px; border-radius:50%">
-            <span itemprop="author">Ксения Хаджинова</span>
-        </div>
-        <div class="desktop-only">
-            Notation: <span id="current-notation-display">BPMN 2.0</span> | v1.0.4
-        </div>
+        <div style="margin-left: auto;">Ксения Хаджинова | v1.0.7</div>
     </footer>
 
-    <!-- ==========================================================================
-         МОДАЛЬНЫЕ ОКНА
-         ========================================================================== -->
-    
-    <!-- Документация -->
-    <div class="modal" id="help-modal">
-        <div class="modal__overlay" data-close></div>
-        <div class="modal__content">
-            <div class="modal__header">
-                <div>
-                    <h2 style="font-size:20px">Документация</h2>
-                    <p style="font-size:13px; color:var(--text-muted)">Краткий справочник по синтаксису BPMN</p>
-                </div>
-                <button class="button--ghost modal__close" data-close><i data-lucide="x"></i></button>
+    <!-- ШТОРКА: EXPORT -->
+    <div class="modal-overlay" id="export-modal" onclick="closeModal('export-modal')">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <h2 class="modal-title">Export Diagram</h2>
+            <p class="modal-subtitle">Choose a format to export your diagram</p>
+            
+            <div style="margin-bottom: 24px;">
+                <label style="display:flex; align-items:center; gap:16px; padding:16px; border:1px solid var(--border-color); border-radius:12px; margin-bottom:12px; cursor:pointer;">
+                    <input type="radio" name="fmt" value="svg" checked> 
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-weight:600; font-size:15px;">SVG</span>
+                        <span style="font-size:13px; color:var(--text-muted);">Scalable Vector Graphics</span>
+                    </div>
+                </label>
+                <label style="display:flex; align-items:center; gap:16px; padding:16px; border:1px solid var(--border-color); border-radius:12px; cursor:pointer;">
+                    <input type="radio" name="fmt" value="png"> 
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-weight:600; font-size:15px;">PNG</span>
+                        <span style="font-size:13px; color:var(--text-muted);">Portable Network Graphics</span>
+                    </div>
+                </label>
             </div>
-            <div class="modal__body">
-                <div style="display:flex; flex-direction:column; gap:16px">
-                    <section>
-                        <h4 style="margin-bottom:8px">Элементы потока</h4>
-                        <ul style="padding-left:20px; font-size:14px; display:flex; flex-direction:column; gap:6px">
-                            <li><code>[Текст]</code> — Прямоугольная задача</li>
-                            <li><code>{Текст}</code> — Ромб принятия решения</li>
-                            <li><code>(Текст)</code> — Скругленное событие</li>
-                        </ul>
-                    </section>
-                </div>
-            </div>
-            <div class="modal__footer">
-                <button class="button button--primary" data-close>Понятно</button>
+            
+            <div class="sheet-actions" style="flex-direction: column;">
+                <button class="btn-sheet btn-sheet--black" onclick="closeModal('export-modal'); showToast('File downloaded!')"><i data-lucide="download" size="18"></i> Export as SVG</button>
+                <button class="btn-sheet" onclick="closeModal('export-modal')">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Экспорт -->
-    <div class="modal" id="export-modal">
-        <div class="modal__overlay" data-close></div>
-        <div class="modal__content">
-            <div class="modal__header">
-                <h2 style="font-size:20px">Экспорт диаграммы</h2>
-                <button class="button--ghost modal__close" data-close><i data-lucide="x"></i></button>
+    <!-- ШТОРКА: AI PROMPT -->
+    <div class="modal-overlay" id="ai-modal" onclick="closeModal('ai-modal')">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <h2 class="modal-title">AI Prompt</h2>
+            <p class="modal-subtitle">Enter your prompt to generate a diagram</p>
+            
+            <div class="form-group" style="display:flex; align-items:center; gap:16px;">
+                <label class="form-label" style="margin:0;">Engine:</label>
+                <select class="form-control" style="flex:1;">
+                    <option>GPT-4 Diagram</option>
+                    <option>Claude 3.5 Visualization</option>
+                </select>
             </div>
-            <div class="modal__body">
-                <p style="font-size:14px; margin-bottom: 15px;">Выберите формат для сохранения файла:</p>
-                <div style="display:flex; flex-direction:column; gap:12px">
-                    <label style="display:flex; align-items:center; gap:12px; padding:16px; border:2px solid var(--color-accent-purple); border-radius:10px; background:#f5f3ff; cursor:pointer">
-                        <input type="radio" name="fmt" value="svg" checked style="accent-color:var(--color-accent-purple)">
-                        <div style="display:flex; flex-direction:column">
-                            <span style="font-weight:700">SVG (Векторный)</span>
-                        </div>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--border-light); border-radius:10px; cursor:pointer">
-                        <input type="radio" name="fmt" value="png" style="accent-color:var(--color-accent-purple)">
-                        <div style="display:flex; flex-direction:column">
-                            <span style="font-weight:700">PNG (Растровый)</span>
-                        </div>
-                    </label>
-                </div>
+            <div class="form-group">
+                <label class="form-label">Prompt</label>
+                <textarea class="form-control form-textarea" placeholder="Describe the diagram you want to create..."></textarea>
             </div>
-            <div class="modal__footer">
-                <button class="button button--primary button--full-width" style="flex:1" id="export-btn">
-                    <i data-lucide="download"></i> Скачать
-                </button>
+            
+            <div class="sheet-actions">
+                <button class="btn-sheet btn-sheet--gray" onclick="closeModal('ai-modal'); showToast('Generating...')"><i data-lucide="sparkles" size="18"></i> Generate</button>
+                <button class="btn-sheet" onclick="closeModal('ai-modal')">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- AI Форма (Требование ЛР 5: Валидация и submit) -->
-    <div class="modal" id="ai-modal">
-        <div class="modal__overlay" data-close></div>
-        <div class="modal__content">
-            <form id="ai-form" novalidate>
-                <div class="modal__header">
-                    <div>
-                        <h2 style="font-size:20px">AI Ассистент</h2>
-                        <p style="font-size:13px; color:var(--text-muted)">Генерация схемы с помощью нейросети</p>
-                    </div>
-                    <button type="button" class="button--ghost modal__close" data-close><i data-lucide="x"></i></button>
-                </div>
-                <div class="modal__body">
-                    <div class="form-group">
-                        <label class="form-label" for="ai-email">Email для отправки результата (валидация onBlur)</label>
-                        <input type="email" id="ai-email" class="form-input" placeholder="example@mail.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="ai-prompt">Опишите процесс (валидация onSubmit)</label>
-                        <textarea id="ai-prompt" class="form-textarea" placeholder="Создай схему заказа..."></textarea>
-                    </div>
-                </div>
-                <div class="modal__footer">
-                    <button type="submit" class="button button--primary" style="flex:1"><i data-lucide="sparkles"></i> Сгенерировать</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <div class="toast" id="toast">Уведомление</div>
 
     <!-- ==========================================================================
-         JAVASCRIPT LOGIC (Лабораторная работа №5)
+         JAVASCRIPT LOGIC
          ========================================================================== -->
     <script>
+        /**
+         * Умный движок рендеринга (Smart Grid Auto-Layout)
+         * Генерирует SVG на основе текста, рассчитывая координаты узлов и изгибы линий.
+         */
+        const renderDiagram = (code, containerId) => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const lines = code.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('graph'));
+            const nodes = {};
+            const edges = [];
+
+            // Парсинг ID и связей
+            const parseNode = (str) => {
+                const match = str.match(/^([A-Za-z0-9_А-Яа-я]+)(?:(\[|\{|\()(.+?)(\]|\}|\)))?/);
+                if (!match) return str;
+                const id = match[1], type = match[2] === '{' ? 'diamond' : (match[2] === '(' ? 'rounded' : 'rect'), label = match[3] || id;
+                if (!nodes[id]) nodes[id] = { id, label, type };
+                return id;
+            };
+
+            lines.forEach(line => {
+                const parts = line.split(/-->|->/);
+                if (parts.length > 1) {
+                    const sourcePart = parts[0].trim();
+                    let targetPart = parts[1].trim(), label = "";
+                    if (targetPart.startsWith('|')) {
+                        const end = targetPart.indexOf('|', 1);
+                        label = targetPart.substring(1, end);
+                        targetPart = targetPart.substring(end + 1).trim();
+                    }
+                    edges.push({ source: parseNode(sourcePart), target: parseNode(targetPart), label });
+                } else { parseNode(line); }
+            });
+
+            if (Object.keys(nodes).length === 0) return;
+
+            // Алгоритм расстановки (Layout)
+            const canvasWidth = 600, canvasHeight = 500, centerX = 300, positions = {};
+            const depths = {}, xGrid = {}, visited = new Set(), root = Object.keys(nodes)[0];
+            
+            if (root) {
+                const q = [root]; depths[root] = 0; xGrid[root] = 0; visited.add(root);
+                while (q.length > 0) {
+                    const currId = q.shift();
+                    edges.filter(e => e.source === currId && !visited.has(e.target)).forEach((edge, i) => {
+                        visited.add(edge.target);
+                        depths[edge.target] = depths[currId] + 1;
+                        const lbl = edge.label.toLowerCase();
+                        xGrid[edge.target] = (lbl.includes('yes') || lbl.includes('да')) ? xGrid[currId] + 1 : ((lbl.includes('no') || lbl.includes('нет')) ? xGrid[currId] - 1 : xGrid[currId] + (i * 1.2));
+                        q.push(edge.target);
+                    });
+                }
+            }
+
+            Object.keys(nodes).forEach(id => {
+                positions[id] = { x: centerX + ((xGrid[id] || 0) * 160), y: 70 + ((depths[id] || 0) * 120) };
+            });
+
+            const colors = { blue: '#3b82f6', yellow: '#fbbf24', red: '#ef4444', green: '#10b981', line: '#64748b' };
+            let svg = `<svg viewBox="0 0 ${canvasWidth} ${canvasHeight}" style="width:100%; height:100%;" xmlns="http://www.w3.org/2000/svg"><defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="${colors.line}"/></marker></defs>`;
+
+            // Рисуем линии
+            edges.forEach(e => {
+                const s = positions[e.source], t = positions[e.target];
+                if (!s || !t) return;
+                let d = t.y <= s.y ? `M ${s.x} ${s.y - 25} C ${s.x} ${s.y - 100}, ${t.x - 140} ${t.y}, ${t.x - 80} ${t.y}` : `M ${s.x} ${s.y + 25} L ${t.x} ${t.y - 25}`;
+                svg += `<path d="${d}" stroke="${colors.line}" stroke-width="2" fill="none" marker-end="url(#arrow)" />`;
+                if (e.label) svg += `<text x="${(s.x + t.x)/2 + (t.x > s.x ? 15 : -15)}" y="${(s.y + t.y)/2 - 5}" fill="${colors.line}" font-size="12" text-anchor="middle" font-weight="600">${e.label}</text>`;
+            });
+
+            // Рисуем блоки
+            Object.values(nodes).forEach(n => {
+                const p = positions[n.id], lower = n.label.toLowerCase();
+                let fill = colors.blue;
+                if (n.type === 'diamond') fill = colors.yellow;
+                else if (lower.includes('debug') || lower.includes('no')) fill = colors.red;
+                else if (lower.includes('great') || lower.includes('yes') || lower.includes('конец')) fill = colors.green;
+
+                if (n.type === 'diamond') svg += `<polygon points="${p.x},${p.y-45} ${p.x+90},${p.y} ${p.x},${p.y+45} ${p.x-90},${p.y}" fill="${fill}" />`;
+                else svg += `<rect x="${p.x-70}" y="${p.y-25}" width="140" height="50" rx="8" fill="${fill}" />`;
+                svg += `<text x="${p.x}" y="${p.y+5}" text-anchor="middle" fill="white" font-size="14" font-weight="600">${n.label}</text>`;
+            });
+
+            container.innerHTML = svg + '</svg>';
+        };
+
+        // UI Логика
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация иконок
             lucide.createIcons();
+            const codeInput = document.getElementById('code-input'), lineNumbers = document.getElementById('line-numbers');
 
-            /* ----------------------------------------------------------------------
-               1. УТИЛИТЫ И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-               ---------------------------------------------------------------------- */
-            
-            // Валидация Email (Регулярные выражения из ЛР5)
-            const validateEmail = (email) => {
-                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return regex.test(email);
+            const updateLines = () => {
+                lineNumbers.innerHTML = Array.from({length: codeInput.value.split('\n').length}, (_, i) => `<div>${i+1}</div>`).join('');
+            };
+            codeInput.addEventListener('input', updateLines);
+            codeInput.addEventListener('scroll', () => lineNumbers.scrollTop = codeInput.scrollTop);
+            updateLines();
+
+            window.openModal = (id) => document.getElementById(id).classList.add('is-active');
+            window.closeModal = (id) => document.getElementById(id).classList.remove('is-active');
+            window.showToast = (msg) => {
+                const t = document.getElementById('toast'); t.textContent = msg; t.style.opacity = '1';
+                setTimeout(() => t.style.opacity = '0', 2500);
             };
 
-            // Создание DOM элементов: Всплывающее уведомление (Toast)
-            const showToast = (message, type = 'success') => {
-                const toast = document.createElement('div');
-                
-                // Использование Object.assign для стилей (требование ЛР5)
-                Object.assign(toast.style, {
-                    position: 'fixed',
-                    bottom: '30px',
-                    right: '30px',
-                    backgroundColor: type === 'success' ? '#10B981' : '#EF4444',
-                    color: 'white',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    zIndex: '9999',
-                    opacity: '0',
-                    transform: 'translateY(20px)',
-                    transition: 'all 0.3s ease',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                });
-                
-                toast.textContent = message;
-                document.body.appendChild(toast); // Добавление элемента в DOM
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('is-active'));
+                    btn.classList.add('is-active');
+                    document.getElementById('workspace').className = 'workspace show-' + btn.dataset.tab;
+                };
+            });
 
-                // Анимация появления
-                requestAnimationFrame(() => {
-                    toast.style.opacity = '1';
-                    toast.style.transform = 'translateY(0)';
-                });
-
-                // Удаление элемента из DOM после задержки
+            const run = () => {
+                const btn = document.getElementById('run-btn'), icon = btn.querySelector('i');
+                const prev = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="spin"></i> Run';
+                lucide.createIcons();
                 setTimeout(() => {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateY(20px)';
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
+                    renderDiagram(codeInput.value, 'diagram-container');
+                    btn.disabled = false; btn.innerHTML = prev; lucide.createIcons();
+                }, 600);
             };
-
-            // Функции показа/скрытия ошибок инпутов
-            const showError = (element, message) => {
-                element.style.borderColor = '#EF4444';
-                let errorEl = element.nextElementSibling;
-                if (!errorEl || !errorEl.classList.contains('error-message')) {
-                    errorEl = document.createElement('div');
-                    errorEl.className = 'error-message';
-                    element.parentNode.appendChild(errorEl);
-                }
-                errorEl.textContent = message;
-            };
-
-            const clearError = (element) => {
-                element.style.borderColor = '';
-                const errorEl = element.nextElementSibling;
-                if (errorEl && errorEl.classList.contains('error-message')) {
-                    errorEl.remove();
-                }
-            };
-
-            /* ----------------------------------------------------------------------
-               2. РАБОТА С LOCAL STORAGE И РЕДАКТОРОМ
-               ---------------------------------------------------------------------- */
-            const codeInput = document.getElementById('code-input');
-            const lineNumbers = document.getElementById('line-numbers');
-            const STORAGE_KEY = 'diagram_code_draft';
-
-            // Загрузка из LocalStorage
-            const savedCode = localStorage.getItem(STORAGE_KEY);
-            if (savedCode) {
-                codeInput.value = savedCode;
-            }
-
-            // Обновление номеров строк
-            const updateLineNumbers = () => {
-                const linesCount = codeInput.value.split('\n').length;
-                lineNumbers.innerHTML = Array.from({length: linesCount}, (_, i) => `<div>${i+1}</div>`).join('');
-            };
-
-            // Обработчик события ввода (Input)
-            codeInput.addEventListener('input', (e) => {
-                updateLineNumbers();
-                // Сохранение в LocalStorage при каждом изменении
-                localStorage.setItem(STORAGE_KEY, e.target.value);
-            });
-
-            // Синхронизация скролла
-            codeInput.addEventListener('scroll', () => {
-                lineNumbers.scrollTop = codeInput.scrollTop;
-            });
-
-            // Перехват нажатия Tab (Оператор возведения в степень ** не нужен, но используем логику строк)
-            codeInput.addEventListener('keydown', function(e) {
-                if(e.key === 'Tab') {
-                    e.preventDefault();
-                    const start = this.selectionStart;
-                    const end = this.selectionEnd;
-                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
-                    this.selectionStart = this.selectionEnd = start + 4;
-                    updateLineNumbers();
-                }
-            });
-
-            updateLineNumbers(); // Первичный вызов
-
-            /* ----------------------------------------------------------------------
-               3. ДЕЛЕГИРОВАНИЕ СОБЫТИЙ (Модальные окна и меню)
-               ---------------------------------------------------------------------- */
-            // Делегируем прослушивание кликов на body
-            document.body.addEventListener('click', (event) => {
-                
-                // 1. Открытие модалок
-                const trigger = event.target.closest('[aria-controls]');
-                if (trigger && !trigger.id?.includes('burger')) {
-                    event.preventDefault();
-                    const targetId = trigger.getAttribute('aria-controls');
-                    const targetModal = document.getElementById(targetId);
-                    if (targetModal) {
-                        targetModal.classList.add('is-active');
-                        document.body.style.overflow = 'hidden';
-                    }
-                }
-
-                // 2. Закрытие модалок (крестик, оверлей, кнопки отмены)
-                if (event.target.closest('[data-close]') || event.target.classList.contains('modal__overlay')) {
-                    const modal = event.target.closest('.modal');
-                    if (modal) {
-                        modal.classList.remove('is-active');
-                        document.body.style.overflow = '';
-                    }
-                }
-            });
-
-            // Бургер меню
-            const burger = document.getElementById('burger-trigger');
-            const drawer = document.getElementById('mobile-drawer');
-            const drawerClose = document.getElementById('drawer-close');
-
-            if (burger && drawer) {
-                burger.addEventListener('click', () => drawer.classList.add('is-open'));
-                drawerClose.addEventListener('click', () => drawer.classList.remove('is-open'));
-            }
-
-            /* ----------------------------------------------------------------------
-               4. АСИНХРОННЫЕ ОПЕРАЦИИ (ASYNC / AWAIT)
-               ---------------------------------------------------------------------- */
-            
-            // Обработчик запуска движка
-            const runBtn = document.getElementById('run-main');
-            const svgContainer = document.getElementById('diagram-container');
-
-            // Имитация асинхронного API запроса (Требование ЛР5)
-            const mockApiCall = () => new Promise(resolve => setTimeout(resolve, 1500));
-
-            runBtn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                
-                const originalHtml = this.innerHTML;
-                this.innerHTML = '<i data-lucide="loader" class="spin"></i> Загрузка...';
-                this.disabled = true;
-                
-                svgContainer.style.opacity = '0.3';
-                svgContainer.style.filter = 'blur(4px)';
-
-                try {
-                    // Ожидание завершения "запроса"
-                    await mockApiCall();
-                    
-                    showToast('Схема успешно скомпилирована!', 'success');
-                } catch (error) {
-                    showToast('Ошибка компиляции', 'error');
-                    console.error(error);
-                } finally {
-                    // Блок finally (ES2018 из теории ЛР)
-                    this.innerHTML = originalHtml;
-                    this.disabled = false;
-                    svgContainer.style.opacity = '1';
-                    svgContainer.style.filter = 'none';
-                    lucide.createIcons(); // Перерисовать иконку
-                }
-            });
-
-            /* ----------------------------------------------------------------------
-               5. ВАЛИДАЦИЯ ФОРМ
-               ---------------------------------------------------------------------- */
-            const aiForm = document.getElementById('ai-form');
-            const emailInput = document.getElementById('ai-email');
-            const promptInput = document.getElementById('ai-prompt');
-
-            // Валидация Email при потере фокуса (Blur event)
-            emailInput.addEventListener('blur', function() {
-                clearError(this);
-                if (this.value && !validateEmail(this.value)) {
-                    showError(this, 'Введите корректный email адрес');
-                }
-            });
-
-            // Валидация при отправке формы (Submit event)
-            aiForm.addEventListener('submit', function(event) {
-                event.preventDefault(); // Отмена стандартного поведения
-                let isValid = true;
-
-                // Проверка email
-                clearError(emailInput);
-                if (!emailInput.value.trim()) {
-                    showError(emailInput, 'Email обязателен для отправки результата');
-                    isValid = false;
-                } else if (!validateEmail(emailInput.value)) {
-                    showError(emailInput, 'Введите корректный email адрес');
-                    isValid = false;
-                }
-
-                // Проверка описания
-                clearError(promptInput);
-                if (promptInput.value.trim().length < 10) {
-                    showError(promptInput, 'Описание должно содержать минимум 10 символов');
-                    isValid = false;
-                }
-
-                if (isValid) {
-                    // Использование FormData
-                    const formData = new FormData();
-                    formData.append('email', emailInput.value);
-                    formData.append('prompt', promptInput.value);
-                    
-                    console.log('Отправка данных:', Object.fromEntries(formData));
-                    
-                    const modal = document.getElementById('ai-modal');
-                    modal.classList.remove('is-active');
-                    document.body.style.overflow = '';
-                    
-                    showToast('Задача отправлена нейросети. Ожидайте письмо!', 'success');
-                    aiForm.reset();
-                }
-            });
-
-            // Обновление статуса в футере при изменении селектора
-            const notationSelect = document.getElementById('notation-select');
-            const displayNotation = document.getElementById('current-notation-display');
-            
-            if (notationSelect && displayNotation) {
-                notationSelect.addEventListener('change', (e) => {
-                    const text = e.target.options[e.target.selectedIndex].text;
-                    displayNotation.textContent = text;
-                    showToast(`Движок нотации изменен на ${text}`, 'success');
-                });
-            }
+            document.getElementById('run-btn').onclick = run;
+            run();
         });
     </script>
 </body>
