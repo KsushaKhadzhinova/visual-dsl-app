@@ -7,13 +7,16 @@
     <meta name="author" content="Ксения Хаджинова">
     <title>DiagramCode — Visual DSL Diagrammer IDE</title>
     
-      <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Подключение шрифтов и иконок -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-
+        /* ==========================================================================
+           1. ПЕРЕМЕННЫЕ (DESIGN TOKENS)
+           ========================================================================== */
         :root {
             --color-primary: #030213;
             --color-accent-purple: #8b5cf6;
@@ -44,13 +47,22 @@
             --font-mono: 'Source Code Pro', monospace;
             
             --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
             --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
+        /* ==========================================================================
+           2. СБРОС И БАЗОВЫЕ СТИЛИ
+           ========================================================================== */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body.page {
@@ -79,10 +91,11 @@
             transition: top 0.3s;
         }
 
-        .skip-link:focus {
-            top: 0;
-        }
+        .skip-link:focus { top: 0; }
 
+        /* ==========================================================================
+           3. КОМПОНЕНТЫ: КНОПКИ
+           ========================================================================== */
         .button {
             display: inline-flex;
             align-items: center;
@@ -98,6 +111,12 @@
             transition: var(--transition-base);
             white-space: nowrap;
             user-select: none;
+            font-family: inherit;
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .button--primary {
@@ -105,10 +124,10 @@
             color: white;
         }
 
-        .button--primary:hover {
+        .button--primary:hover:not(:disabled) {
             background-color: #1a1a2e;
             transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-md);
         }
 
         .button--outline {
@@ -116,7 +135,7 @@
             color: var(--text-main);
         }
 
-        .button--outline:hover {
+        .button--outline:hover:not(:disabled) {
             background-color: var(--bg-canvas);
         }
 
@@ -124,7 +143,7 @@
             color: var(--text-muted);
         }
 
-        .button--ghost:hover {
+        .button--ghost:hover:not(:disabled) {
             color: var(--color-primary);
             background-color: var(--bg-canvas);
         }
@@ -135,23 +154,13 @@
             border-color: #ddd6fe;
         }
 
-        .button--ai:hover {
+        .button--ai:hover:not(:disabled) {
             background-color: #ede9fe;
         }
 
-        .button--fab {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: var(--radius-full);
-            background-color: var(--color-primary);
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-            z-index: 50;
-        }
-
+        /* ==========================================================================
+           4. ШАПКА САЙТА (HEADER)
+           ========================================================================== */
         .header {
             height: var(--header-h);
             display: flex;
@@ -242,10 +251,11 @@
             transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .mobile-drawer.is-open {
-            right: 0;
-        }
+        .mobile-drawer.is-open { right: 0; }
 
+        /* ==========================================================================
+           5. РАБОЧАЯ ОБЛАСТЬ (WORKSPACE)
+           ========================================================================== */
         .workspace {
             flex: 1;
             display: grid;
@@ -260,6 +270,12 @@
             border-right: 1px solid var(--color-editor-border);
         }
 
+        .editor__container {
+            display: flex;
+            height: 100%;
+            overflow: hidden;
+        }
+
         .editor__gutter {
             width: 50px;
             background: rgba(0,0,0,0.2);
@@ -271,11 +287,7 @@
             font-size: 13px;
             line-height: 1.6;
             user-select: none;
-        }
-
-        .editor__container {
-            display: flex;
-            height: 100%;
+            overflow-y: hidden;
         }
 
         .editor__textarea {
@@ -302,6 +314,7 @@
             position: relative;
             background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
             background-size: 20px 20px;
+            overflow: hidden;
         }
 
         .preview__wrapper {
@@ -313,6 +326,7 @@
             max-height: 100%;
             overflow: auto;
             border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
         }
 
         .preview__svg {
@@ -321,6 +335,9 @@
             max-width: 100%;
         }
 
+        /* ==========================================================================
+           6. МОДАЛЬНЫЕ ОКНА И ФОРМЫ
+           ========================================================================== */
         .modal {
             position: fixed;
             inset: 0;
@@ -387,29 +404,58 @@
             justify-content: flex-end;
         }
 
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--color-accent-purple);
+        }
+
+        .error-message {
+            color: var(--color-danger);
+            font-size: 12px;
+            margin-top: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================================
+           7. АДАПТИВНОСТЬ
+           ========================================================================== */
         @media (max-width: 768px) {
-            .workspace {
-                grid-template-columns: 1fr;
-            }
-
-            .header__nav .button:not(.button--run) {
-                display: none;
-            }
-
-            .header__burger {
-                display: flex;
-            }
-
-            .desktop-only {
-                display: none !important;
-            }
-
+            .workspace { grid-template-columns: 1fr; }
+            .header__nav .button:not(.button--run) { display: none; }
+            .header__burger { display: flex; }
+            .desktop-only { display: none !important; }
             .workspace__tabs {
                 display: flex;
                 background: var(--bg-canvas);
                 border-bottom: 1px solid var(--border-light);
             }
-
             .workspace__tab {
                 flex: 1;
                 padding: 12px;
@@ -420,7 +466,6 @@
                 cursor: pointer;
                 border-bottom: 2px solid transparent;
             }
-
             .workspace__tab.is-active {
                 color: var(--color-accent-purple);
                 border-bottom-color: var(--color-accent-purple);
@@ -434,8 +479,10 @@
     <meta itemprop="applicationCategory" content="DeveloperApplication">
     <meta itemprop="operatingSystem" content="Web">
 
+    <!-- Доступность -->
     <a href="#main-content" class="skip-link">Перейти к контенту</a>
 
+    <!-- ШАПКА -->
     <header class="header">
         <div class="header__logo" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
             <div class="header__logo-box">
@@ -454,14 +501,13 @@
                 <i data-lucide="chevron-down" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--text-muted)" size="14"></i>
             </div>
 
-            <button class="button button--ghost desktop-only" id="help-trigger">
-                <i data-lucide="help-circle" size="18"></i>
-                Справка
+            <button class="button button--ghost desktop-only" aria-controls="help-modal">
+                <i data-lucide="help-circle" size="18"></i> Справка
             </button>
 
+            <!-- Основная кнопка RUN -->
             <button class="button button--primary button--run" id="run-main">
-                <i data-lucide="play" size="16"></i>
-                Run
+                <i data-lucide="play" size="16"></i> Run
             </button>
 
             <button class="header__burger" id="burger-trigger" aria-label="Открыть меню">
@@ -470,84 +516,89 @@
         </nav>
     </header>
 
+    <!-- МОБИЛЬНОЕ МЕНЮ (Drawer) -->
     <aside class="mobile-drawer" id="mobile-drawer">
         <div style="display:flex; justify-content:space-between; margin-bottom:30px">
             <h3 style="font-size:22px">Меню</h3>
             <button id="drawer-close" style="background:none; border:none; cursor:pointer"><i data-lucide="x"></i></button>
         </div>
         <div style="display:flex; flex-direction:column; gap:20px">
-            <div style="color:var(--text-muted); font-size:12px; font-weight:700; text-transform:uppercase">Notation</div>
-            <button class="button button--outline" style="justify-content:flex-start">BPMN Diagram</button>
-            <button class="button button--outline" style="justify-content:flex-start">Sequence Diagram</button>
-            
-            <div style="color:var(--text-muted); font-size:12px; font-weight:700; text-transform:uppercase; margin-top:20px">Actions</div>
-            <button class="button button--outline" style="justify-content:flex-start" onclick="openModal('export-modal')"><i data-lucide="download"></i> Export</button>
-            <button class="button button--ai" style="justify-content:flex-start" onclick="openModal('ai-modal')"><i data-lucide="sparkles"></i> AI Prompt</button>
+            <div style="color:var(--text-muted); font-size:12px; font-weight:700; text-transform:uppercase">Действия</div>
+            <button class="button button--outline" style="justify-content:flex-start" aria-controls="export-modal"><i data-lucide="download"></i> Экспорт</button>
+            <button class="button button--ai" style="justify-content:flex-start" aria-controls="ai-modal"><i data-lucide="sparkles"></i> AI Ассистент</button>
         </div>
     </aside>
 
-    <!-- РАБОЧАЯ ОБЛАСТЬ -->
+    <!-- ТАБЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ -->
     <div class="workspace__tabs" id="mobile-tabs" style="display:none">
         <div class="workspace__tab is-active" data-target="editor-section">Code</div>
         <div class="workspace__tab" data-target="preview-section">Diagram</div>
     </div>
 
+    <!-- РАБОЧАЯ ОБЛАСТЬ -->
     <main class="workspace" id="main-content">
         <!-- Секция редактора -->
         <section class="editor" id="editor-section">
             <div class="editor__container">
                 <div class="editor__gutter" id="line-numbers">
-                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
+                    <!-- Генерируется через JS -->
                 </div>
-                <textarea class="editor__textarea" id="code-input" spellcheck="false">graph TD
-    A[Start] --> B{Is it working?}
-    B -->|Yes| C[Great!]
-    B -->|No| D[Debug]
-    D --> B
-    C --> E[End]</textarea>
+                <textarea class="editor__textarea" id="code-input" spellcheck="false" placeholder="Введите код диаграммы..."></textarea>
             </div>
         </section>
 
+        <!-- Секция визуализации (Диаграмма) -->
         <section class="preview" id="preview-section">
-            <div class="preview__wrapper" id="svg-output">
-                <svg viewBox="0 0 600 450" class="preview__svg" xmlns="http://www.w3.org/2000/svg">
+            <div class="preview__wrapper" id="diagram-container">
+                <!-- Отрисовка SVG кодом -->
+                <svg viewBox="0 0 600 450" class="preview__svg" xmlns="http://www.w3.org/2000/svg" id="svg-output">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+                        </marker>
+                    </defs>
                     <rect x="230" y="20" width="140" height="60" rx="10" fill="#3B82F6" />
                     <text x="300" y="55" text-anchor="middle" fill="white" font-weight="600">Start</text>
                     <path d="M300 80 L300 120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
                     <polygon points="300,120 390,170 300,220 210,170" fill="#F59E0B" />
                     <text x="300" y="175" text-anchor="middle" fill="#78350F" font-size="14" font-weight="800">Is it working?</text>
+                    <path d="M390 170 L480 170 L480 230" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <rect x="410" y="240" width="140" height="60" rx="10" fill="#10B981" />
+                    <text x="480" y="275" text-anchor="middle" fill="white" font-weight="600">Great!</text>
                 </svg>
             </div>
-
-            <button class="button button--fab hidden-desktop" id="run-fab">
-                <i data-lucide="play" fill="white"></i>
-            </button>
         </section>
     </main>
 
+    <!-- СТАТУС-БАР -->
     <footer class="status-bar" style="height:var(--footer-h); border-top:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:var(--text-muted)">
         <div style="display:flex; align-items:center; gap:8px">
             <span style="width:8px; height:8px; border-radius:50%; background:var(--color-success)"></span>
             Engine: Connected
         </div>
         <div style="display:flex; align-items:center; gap:8px">
-            <img src="https://ui-avatars.com/api/?name=Ksenia+Khadzhinova&background=030213&color=fff" alt="Великий бизнес-аналитик" style="width:20px; height:20px; border-radius:50%">
-            <span itemprop="author">Великий бизнес-аналитик</span>
+            <img src="https://ui-avatars.com/api/?name=Ksenia+Khadzhinova&background=030213&color=fff" alt="Ксения Хаджинова" style="width:20px; height:20px; border-radius:50%">
+            <span itemprop="author">Ксения Хаджинова</span>
         </div>
         <div class="desktop-only">
-            Notation: BPMN 2.0 | v1.0.4
+            Notation: <span id="current-notation-display">BPMN 2.0</span> | v1.0.4
         </div>
     </footer>
 
+    <!-- ==========================================================================
+         МОДАЛЬНЫЕ ОКНА
+         ========================================================================== -->
+    
+    <!-- Документация -->
     <div class="modal" id="help-modal">
-        <div class="modal__overlay" onclick="closeModal('help-modal')"></div>
+        <div class="modal__overlay" data-close></div>
         <div class="modal__content">
             <div class="modal__header">
                 <div>
                     <h2 style="font-size:20px">Документация</h2>
                     <p style="font-size:13px; color:var(--text-muted)">Краткий справочник по синтаксису BPMN</p>
                 </div>
-                <button class="button--ghost" onclick="closeModal('help-modal')"><i data-lucide="x"></i></button>
+                <button class="button--ghost modal__close" data-close><i data-lucide="x"></i></button>
             </div>
             <div class="modal__body">
                 <div style="display:flex; flex-direction:column; gap:16px">
@@ -559,167 +610,340 @@
                             <li><code>(Текст)</code> — Скругленное событие</li>
                         </ul>
                     </section>
-                    <section>
-                        <h4 style="margin-bottom:8px">Пример кода</h4>
-                        <pre style="background:#f1f5f9; padding:12px; border-radius:6px; font-family:var(--font-mono); font-size:12px">graph TD
-  Start[Начало] --> Task[Проверка]
-  Task --> End(Конец)</pre>
-                    </section>
                 </div>
             </div>
             <div class="modal__footer">
-                <button class="button button--primary" onclick="closeModal('help-modal')">Понятно</button>
+                <button class="button button--primary" data-close>Понятно</button>
             </div>
         </div>
     </div>
 
+    <!-- Экспорт -->
     <div class="modal" id="export-modal">
-        <div class="modal__overlay" onclick="closeModal('export-modal')"></div>
+        <div class="modal__overlay" data-close></div>
         <div class="modal__content">
             <div class="modal__header">
                 <h2 style="font-size:20px">Экспорт диаграммы</h2>
-                <button class="button--ghost" onclick="closeModal('export-modal')"><i data-lucide="x"></i></button>
+                <button class="button--ghost modal__close" data-close><i data-lucide="x"></i></button>
             </div>
             <div class="modal__body">
+                <p style="font-size:14px; margin-bottom: 15px;">Выберите формат для сохранения файла:</p>
                 <div style="display:flex; flex-direction:column; gap:12px">
                     <label style="display:flex; align-items:center; gap:12px; padding:16px; border:2px solid var(--color-accent-purple); border-radius:10px; background:#f5f3ff; cursor:pointer">
-                        <input type="radio" name="fmt" checked style="accent-color:var(--color-accent-purple)">
+                        <input type="radio" name="fmt" value="svg" checked style="accent-color:var(--color-accent-purple)">
                         <div style="display:flex; flex-direction:column">
-                            <span style="font-weight:700">SVG</span>
-                            <span style="font-size:12px; color:var(--text-muted)">Scalable Vector Graphics (Лучшее качество)</span>
+                            <span style="font-weight:700">SVG (Векторный)</span>
                         </div>
                     </label>
                     <label style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--border-light); border-radius:10px; cursor:pointer">
-                        <input type="radio" name="fmt" style="accent-color:var(--color-accent-purple)">
+                        <input type="radio" name="fmt" value="png" style="accent-color:var(--color-accent-purple)">
                         <div style="display:flex; flex-direction:column">
-                            <span style="font-weight:700">PNG</span>
-                            <span style="font-size:12px; color:var(--text-muted)">Portable Network Graphics (Растровое фото)</span>
-                        </div>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--border-light); border-radius:10px; cursor:pointer">
-                        <input type="radio" name="fmt" style="accent-color:var(--color-accent-purple)">
-                        <div style="display:flex; flex-direction:column">
-                            <span style="font-weight:700">PDF</span>
-                            <span style="font-size:12px; color:var(--text-muted)">Portable Document Format (Для печати)</span>
+                            <span style="font-weight:700">PNG (Растровый)</span>
                         </div>
                     </label>
                 </div>
             </div>
             <div class="modal__footer">
-                <button class="button button--primary button--full-width" style="flex:1">
-                    <i data-lucide="download"></i> Export as SVG
+                <button class="button button--primary button--full-width" style="flex:1" id="export-btn">
+                    <i data-lucide="download"></i> Скачать
                 </button>
-                <button class="button button--outline" onclick="closeModal('export-modal')">Отмена</button>
             </div>
         </div>
     </div>
 
+    <!-- AI Форма (Требование ЛР 5: Валидация и submit) -->
     <div class="modal" id="ai-modal">
-        <div class="modal__overlay" onclick="closeModal('ai-modal')"></div>
+        <div class="modal__overlay" data-close></div>
         <div class="modal__content">
-            <div class="modal__header">
-                <div>
-                    <h2 style="font-size:20px">AI Prompt</h2>
-                    <p style="font-size:13px; color:var(--text-muted)">Опишите процесс человеческим языком</p>
-                </div>
-                <button class="button--ghost" onclick="closeModal('ai-modal')"><i data-lucide="x"></i></button>
-            </div>
-            <div class="modal__body">
-                <div style="display:flex; flex-direction:column; gap:15px">
-                    <div style="display:flex; align-items:center; gap:10px">
-                        <span style="font-size:14px; font-weight:600">Engine:</span>
-                        <select style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-light)">
-                            <option>GPT-4o (Visual-Optimized)</option>
-                            <option>Claude 3.5 Sonnet</option>
-                        </select>
+            <form id="ai-form" novalidate>
+                <div class="modal__header">
+                    <div>
+                        <h2 style="font-size:20px">AI Ассистент</h2>
+                        <p style="font-size:13px; color:var(--text-muted)">Генерация схемы с помощью нейросети</p>
                     </div>
-                    <textarea placeholder="Например: Создай схему заказа пиццы, где есть выбор оплаты и проверка наличия ингредиентов..." style="width:100%; height:120px; padding:12px; border-radius:8px; border:1px solid var(--border-light); resize:none; font-family:inherit"></textarea>
+                    <button type="button" class="button--ghost modal__close" data-close><i data-lucide="x"></i></button>
                 </div>
-            </div>
-            <div class="modal__footer">
-                <button class="button button--primary" style="flex:1"><i data-lucide="sparkles"></i> Generate Diagram</button>
-            </div>
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-label" for="ai-email">Email для отправки результата (валидация onBlur)</label>
+                        <input type="email" id="ai-email" class="form-input" placeholder="example@mail.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="ai-prompt">Опишите процесс (валидация onSubmit)</label>
+                        <textarea id="ai-prompt" class="form-textarea" placeholder="Создай схему заказа..."></textarea>
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button type="submit" class="button button--primary" style="flex:1"><i data-lucide="sparkles"></i> Сгенерировать</button>
+                </div>
+            </form>
         </div>
     </div>
 
+    <!-- ==========================================================================
+         JAVASCRIPT LOGIC (Лабораторная работа №5)
+         ========================================================================== -->
     <script>
-
         document.addEventListener('DOMContentLoaded', () => {
-
+            // Инициализация иконок
             lucide.createIcons();
 
-            window.openModal = (id) => {
-                document.getElementById(id).classList.add('is-active');
-                document.body.style.overflow = 'hidden';
+            /* ----------------------------------------------------------------------
+               1. УТИЛИТЫ И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+               ---------------------------------------------------------------------- */
+            
+            // Валидация Email (Регулярные выражения из ЛР5)
+            const validateEmail = (email) => {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return regex.test(email);
             };
 
-            window.closeModal = (id) => {
-                document.getElementById(id).classList.remove('is-active');
-                document.body.style.overflow = '';
+            // Создание DOM элементов: Всплывающее уведомление (Toast)
+            const showToast = (message, type = 'success') => {
+                const toast = document.createElement('div');
+                
+                // Использование Object.assign для стилей (требование ЛР5)
+                Object.assign(toast.style, {
+                    position: 'fixed',
+                    bottom: '30px',
+                    right: '30px',
+                    backgroundColor: type === 'success' ? '#10B981' : '#EF4444',
+                    color: 'white',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    zIndex: '9999',
+                    opacity: '0',
+                    transform: 'translateY(20px)',
+                    transition: 'all 0.3s ease',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                });
+                
+                toast.textContent = message;
+                document.body.appendChild(toast); // Добавление элемента в DOM
+
+                // Анимация появления
+                requestAnimationFrame(() => {
+                    toast.style.opacity = '1';
+                    toast.style.transform = 'translateY(0)';
+                });
+
+                // Удаление элемента из DOM после задержки
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
             };
 
-            document.getElementById('help-trigger').addEventListener('click', () => openModal('help-modal'));
+            // Функции показа/скрытия ошибок инпутов
+            const showError = (element, message) => {
+                element.style.borderColor = '#EF4444';
+                let errorEl = element.nextElementSibling;
+                if (!errorEl || !errorEl.classList.contains('error-message')) {
+                    errorEl = document.createElement('div');
+                    errorEl.className = 'error-message';
+                    element.parentNode.appendChild(errorEl);
+                }
+                errorEl.textContent = message;
+            };
 
+            const clearError = (element) => {
+                element.style.borderColor = '';
+                const errorEl = element.nextElementSibling;
+                if (errorEl && errorEl.classList.contains('error-message')) {
+                    errorEl.remove();
+                }
+            };
+
+            /* ----------------------------------------------------------------------
+               2. РАБОТА С LOCAL STORAGE И РЕДАКТОРОМ
+               ---------------------------------------------------------------------- */
+            const codeInput = document.getElementById('code-input');
+            const lineNumbers = document.getElementById('line-numbers');
+            const STORAGE_KEY = 'diagram_code_draft';
+
+            // Загрузка из LocalStorage
+            const savedCode = localStorage.getItem(STORAGE_KEY);
+            if (savedCode) {
+                codeInput.value = savedCode;
+            }
+
+            // Обновление номеров строк
+            const updateLineNumbers = () => {
+                const linesCount = codeInput.value.split('\n').length;
+                lineNumbers.innerHTML = Array.from({length: linesCount}, (_, i) => `<div>${i+1}</div>`).join('');
+            };
+
+            // Обработчик события ввода (Input)
+            codeInput.addEventListener('input', (e) => {
+                updateLineNumbers();
+                // Сохранение в LocalStorage при каждом изменении
+                localStorage.setItem(STORAGE_KEY, e.target.value);
+            });
+
+            // Синхронизация скролла
+            codeInput.addEventListener('scroll', () => {
+                lineNumbers.scrollTop = codeInput.scrollTop;
+            });
+
+            // Перехват нажатия Tab (Оператор возведения в степень ** не нужен, но используем логику строк)
+            codeInput.addEventListener('keydown', function(e) {
+                if(e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                    updateLineNumbers();
+                }
+            });
+
+            updateLineNumbers(); // Первичный вызов
+
+            /* ----------------------------------------------------------------------
+               3. ДЕЛЕГИРОВАНИЕ СОБЫТИЙ (Модальные окна и меню)
+               ---------------------------------------------------------------------- */
+            // Делегируем прослушивание кликов на body
+            document.body.addEventListener('click', (event) => {
+                
+                // 1. Открытие модалок
+                const trigger = event.target.closest('[aria-controls]');
+                if (trigger && !trigger.id?.includes('burger')) {
+                    event.preventDefault();
+                    const targetId = trigger.getAttribute('aria-controls');
+                    const targetModal = document.getElementById(targetId);
+                    if (targetModal) {
+                        targetModal.classList.add('is-active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                }
+
+                // 2. Закрытие модалок (крестик, оверлей, кнопки отмены)
+                if (event.target.closest('[data-close]') || event.target.classList.contains('modal__overlay')) {
+                    const modal = event.target.closest('.modal');
+                    if (modal) {
+                        modal.classList.remove('is-active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+
+            // Бургер меню
             const burger = document.getElementById('burger-trigger');
             const drawer = document.getElementById('mobile-drawer');
             const drawerClose = document.getElementById('drawer-close');
 
-            burger.addEventListener('click', () => drawer.classList.add('is-open'));
-            drawerClose.addEventListener('click', () => drawer.classList.remove('is-open'));
+            if (burger && drawer) {
+                burger.addEventListener('click', () => drawer.classList.add('is-open'));
+                drawerClose.addEventListener('click', () => drawer.classList.remove('is-open'));
+            }
 
-            const tabs = document.querySelectorAll('.workspace__tab');
-            const editorSec = document.getElementById('editor-section');
-            const previewSec = document.getElementById('preview-section');
+            /* ----------------------------------------------------------------------
+               4. АСИНХРОННЫЕ ОПЕРАЦИИ (ASYNC / AWAIT)
+               ---------------------------------------------------------------------- */
+            
+            // Обработчик запуска движка
+            const runBtn = document.getElementById('run-main');
+            const svgContainer = document.getElementById('diagram-container');
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('is-active'));
-                    tab.classList.add('is-active');
+            // Имитация асинхронного API запроса (Требование ЛР5)
+            const mockApiCall = () => new Promise(resolve => setTimeout(resolve, 1500));
+
+            runBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                const originalHtml = this.innerHTML;
+                this.innerHTML = '<i data-lucide="loader" class="spin"></i> Загрузка...';
+                this.disabled = true;
+                
+                svgContainer.style.opacity = '0.3';
+                svgContainer.style.filter = 'blur(4px)';
+
+                try {
+                    // Ожидание завершения "запроса"
+                    await mockApiCall();
                     
-                    if(tab.dataset.target === 'editor-section') {
-                        editorSec.style.display = 'flex';
-                        previewSec.style.display = 'none';
-                    } else {
-                        editorSec.style.display = 'none';
-                        previewSec.style.display = 'flex';
-                    }
+                    showToast('Схема успешно скомпилирована!', 'success');
+                } catch (error) {
+                    showToast('Ошибка компиляции', 'error');
+                    console.error(error);
+                } finally {
+                    // Блок finally (ES2018 из теории ЛР)
+                    this.innerHTML = originalHtml;
+                    this.disabled = false;
+                    svgContainer.style.opacity = '1';
+                    svgContainer.style.filter = 'none';
+                    lucide.createIcons(); // Перерисовать иконку
+                }
+            });
+
+            /* ----------------------------------------------------------------------
+               5. ВАЛИДАЦИЯ ФОРМ
+               ---------------------------------------------------------------------- */
+            const aiForm = document.getElementById('ai-form');
+            const emailInput = document.getElementById('ai-email');
+            const promptInput = document.getElementById('ai-prompt');
+
+            // Валидация Email при потере фокуса (Blur event)
+            emailInput.addEventListener('blur', function() {
+                clearError(this);
+                if (this.value && !validateEmail(this.value)) {
+                    showError(this, 'Введите корректный email адрес');
+                }
+            });
+
+            // Валидация при отправке формы (Submit event)
+            aiForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Отмена стандартного поведения
+                let isValid = true;
+
+                // Проверка email
+                clearError(emailInput);
+                if (!emailInput.value.trim()) {
+                    showError(emailInput, 'Email обязателен для отправки результата');
+                    isValid = false;
+                } else if (!validateEmail(emailInput.value)) {
+                    showError(emailInput, 'Введите корректный email адрес');
+                    isValid = false;
+                }
+
+                // Проверка описания
+                clearError(promptInput);
+                if (promptInput.value.trim().length < 10) {
+                    showError(promptInput, 'Описание должно содержать минимум 10 символов');
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    // Использование FormData
+                    const formData = new FormData();
+                    formData.append('email', emailInput.value);
+                    formData.append('prompt', promptInput.value);
+                    
+                    console.log('Отправка данных:', Object.fromEntries(formData));
+                    
+                    const modal = document.getElementById('ai-modal');
+                    modal.classList.remove('is-active');
+                    document.body.style.overflow = '';
+                    
+                    showToast('Задача отправлена нейросети. Ожидайте письмо!', 'success');
+                    aiForm.reset();
+                }
+            });
+
+            // Обновление статуса в футере при изменении селектора
+            const notationSelect = document.getElementById('notation-select');
+            const displayNotation = document.getElementById('current-notation-display');
+            
+            if (notationSelect && displayNotation) {
+                notationSelect.addEventListener('change', (e) => {
+                    const text = e.target.options[e.target.selectedIndex].text;
+                    displayNotation.textContent = text;
+                    showToast(`Движок нотации изменен на ${text}`, 'success');
                 });
-            });
-
-            const runButtons = [document.getElementById('run-main'), document.getElementById('run-fab')];
-            const output = document.getElementById('svg-output');
-
-            runButtons.forEach(btn => {
-                if(!btn) return;
-                btn.addEventListener('click', () => {
-                    const originalContent = btn.innerHTML;
-                    btn.disabled = true;
-                    btn.innerHTML = '<span class="animate-pulse">Rendering...</span>';
-                    output.style.opacity = '0.3';
-                    output.style.filter = 'blur(2px)';
-
-                    setTimeout(() => {
-                        btn.disabled = false;
-                        btn.innerHTML = originalContent;
-                        output.style.opacity = '1';
-                        output.style.filter = 'none';
-                        console.log('Diagram compiled successfully.');
-                    }, 1000);
-                });
-            });
-
-            const textarea = document.getElementById('code-input');
-            const lineNumbers = document.getElementById('line-numbers');
-
-            textarea.addEventListener('input', () => {
-                const lines = textarea.value.split('\n').length;
-                lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => `<div>${i+1}</div>`).join('');
-            });
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'Escape') {
-                document.querySelectorAll('.modal.is-active').forEach(m => m.classList.remove('is-active'));
             }
         });
     </script>
