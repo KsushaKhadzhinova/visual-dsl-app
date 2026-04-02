@@ -2,145 +2,132 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DiagramCode — профессиональная IDE для создания диаграмм из кода (DSL). Поддержка Mermaid, PlantUML и ИИ-генерации.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="DiagramCode — профессиональная IDE для визуализации диаграмм из кода (DSL).">
     <title>DiagramCode — Visual DSL Diagrammer IDE</title>
     
-    <!-- Подключение шрифтов (для ЛР 4) -->
+    <!-- Подключение шрифтов -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap">
     
-    <!-- Базовые стили для демонстрации структуры в ЛР 3 -->
-    <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/styles.css">
+    <!-- JS подключается как модуль (ЛР 5/6) -->
+    <script type="module" src="js/script.js"></script>
 </head>
 
 <body class="page" itemscope itemtype="https://schema.org/SoftwareApplication">
-    <!-- Атрибуты для SEO/Schema.org -->
+    <!-- Микроразметка Schema.org -->
     <meta itemprop="applicationCategory" content="DeveloperApplication">
-    <meta itemprop="operatingSystem" content="Web, Windows, MacOS, Linux">
+    <meta itemprop="operatingSystem" content="Web">
     <meta itemprop="name" content="DiagramCode">
 
-    <!-- ЧАСТЬ 3: Skip-link для доступности -->
-    <a href="#main-content" class="skip-link">Пропустить навигацию и перейти к редактору</a>
+    <!-- Доступность: Переход для скринридеров (ЛР 3) -->
+    <a href="#main-content" class="skip-link">Пропустить навигацию</a>
 
-    <!-- СЕКТОР 1: Header с навигацией -->
-    <header class="header" role="banner" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
-        <div class="header__container">
-            <div class="header__brand">
-                <img src="images/logo.svg" alt="Логотип DiagramCode" class="header__logo" width="32" height="32" itemprop="logo">
-                <span class="header__title" itemprop="name">DiagramCode</span>
+    <header class="header">
+        <div class="header__brand" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+            <div class="header__logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Logo DiagramCode">
+                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+                </svg>
             </div>
+            <span class="header__title" itemprop="name">DiagramCode</span>
+        </div>
 
-            <nav class="header__nav" aria-label="Основная навигация">
-                <ul class="header__menu">
-                    <li class="header__item"><a href="#features" class="header__link">Возможности</a></li>
-                    <li class="header__item"><a href="#docs" class="header__link">Документация</a></li>
-                    <li class="header__item">
-                        <button class="button button--primary" type="button" aria-haspopup="dialog">Попробовать бесплатно</button>
-                    </li>
-                </ul>
-            </nav>
+        <nav class="header__nav" id="mobile-nav" aria-label="Главная навигация">
+            <ul class="header__menu">
+                <li class="header__item"><a href="#" class="header__link">Mermaid</a></li>
+                <li class="header__item"><a href="#" class="header__link">PlantUML</a></li>
+                <li class="header__item desktop-only">
+                    <button class="button button--primary button--run">Run</button>
+                </li>
+                <li class="header__item">
+                    <button class="button button--ai" aria-controls="ai-modal">AI Prompt</button>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="header__controls">
+            <!-- Бургер для мобильных устройств (ЛР 4/5) -->
+            <button class="header__burger" id="burger-btn" aria-expanded="false" aria-controls="mobile-nav">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </header>
 
-    <!-- СЕКТОР 2: Основной контент (Main) -->
-    <main class="workspace" id="main-content" role="main">
-        
-        <!-- Заголовок первого уровня H1 -->
-        <h1 class="visually-hidden">Интерактивная среда разработки визуальных диаграмм из кода</h1>
+    <main class="workspace" id="main-content">
+        <!-- Скрытый H1 для SEO/A11y (ЛР 3) -->
+        <h1 class="visually-hidden">Интерактивный редактор DSL диаграмм</h1>
 
-        <!-- Раздел Редактора (Article) -->
-        <article class="editor" id="editor-section">
-            <h2 class="editor__title">Код диаграммы (DSL)</h2>
-            <div class="editor__window">
-                <label for="dsl-input" class="visually-hidden">Введите DSL код здесь</label>
-                <textarea id="dsl-input" class="editor__textarea" spellcheck="false">
-graph TD
-    A[Начало] --> B{Работает?}
-    B -->|Да| C[Успех]
-    B -->|Нет| D[Отладка]
-                </textarea>
+        <!-- Боковая панель меню (ЛР 3 Aside) -->
+        <aside class="workspace__sidebar sidebar">
+            <h2 class="sidebar__title">Настройки</h2>
+            <div class="sidebar__section">
+                <label for="engine-select">Notation</label>
+                <select id="engine-select" class="sidebar__select">
+                    <option value="mermaid">Mermaid.js</option>
+                    <option value="plantuml">PlantUML</option>
+                </select>
             </div>
-            <footer class="editor__actions">
-                <button class="button button--run" aria-label="Запустить визуализацию кода">
-                    <span>Запустить</span>
-                </button>
-            </footer>
-        </article>
+        </aside>
 
-        <!-- Раздел Визуализации (Section) -->
-        <section class="preview" id="diagram-preview">
-            <h2 class="preview__title">Предпросмотр диаграммы</h2>
-            
-            <figure class="preview__canvas" itemprop="image">
-                <!-- Заглушка изображения диаграммы (Требование ЛР: 3 изображения/фигуры) -->
-                <img src="images/sample-diagram.svg" alt="Визуализированная блок-схема процесса отладки" class="preview__svg">
-                <figcaption class="preview__caption">Рисунок 1 — Пример сгенерированной блок-схемы Mermaid</figcaption>
-            </figure>
-
-            <div class="preview__tools">
-                <button class="button button--outline" aria-controls="export-modal">Экспорт</button>
-                <button class="button button--ai" title="Генерация с помощью нейросети">ИИ-Помощник</button>
+        <!-- Основная область IDE (Grid/Flex в ЛР 4) -->
+        <section class="workspace__editor editor">
+            <div class="editor__header">
+                <h2 class="editor__label">Source Code</h2>
             </div>
+            <textarea class="editor__field" id="dsl-input" spellcheck="false" aria-label="DSL Code Editor">graph TD
+    A[Start] --> B{Is it working?}
+    B -->|Yes| C[Great!]
+    B -->|No| D[Debug]
+    D --> B
+    C --> E[End]</textarea>
         </section>
 
-        <!-- Информационная секция (Section + Figures) -->
-        <section class="features" id="features">
-            <h2 class="features__title">Почему выбирают DiagramCode?</h2>
-            <div class="features__grid">
-                <article class="feature-card">
-                    <figure class="feature-card__figure">
-                        <img src="images/icon-speed.svg" alt="Иконка высокой скорости работы" class="feature-card__icon">
-                    </figure>
-                    <h3 class="feature-card__title">Скорость DSL</h3>
-                    <p class="feature-card__text">Создавайте сложные схемы в 10 раз быстрее, чем мышкой в графических редакторах.</p>
-                </article>
-
-                <article class="feature-card">
-                    <figure class="feature-card__figure">
-                        <img src="images/icon-ai.svg" alt="Иконка искусственного интеллекта" class="feature-card__icon">
-                    </figure>
-                    <h3 class="feature-card__title">AI-Генерация</h3>
-                    <p class="feature-card__text">Просто опишите процесс текстом, и ИИ создаст структуру за вас.</p>
-                </article>
+        <!-- Область визуализации (ЛР 4 Canvas) -->
+        <section class="workspace__preview preview">
+            <div class="preview__toolbar">
+                <h2 class="preview__label">Preview</h2>
+                <button class="button button--outline" aria-controls="export-modal">Export SVG</button>
+            </div>
+            <div class="preview__canvas" id="diagram-canvas">
+                <img src="images/placeholder.svg" alt="Preview Diagram Image" class="preview__svg">
             </div>
         </section>
     </main>
 
-    <!-- СЕКТОР 3: Sidebar/Aside (например, список недавних проектов) -->
-    <aside class="sidebar" aria-labelledby="sidebar-title">
-        <h2 id="sidebar-title" class="sidebar__title">Ваши проекты</h2>
-        <nav class="sidebar__nav">
-            <ul class="sidebar__list">
-                <li><a href="#" class="sidebar__link"><time datetime="2023-10-25">25.10</time> Архитектура системы</a></li>
-                <li><a href="#" class="sidebar__link"><time datetime="2023-10-24">24.10</time> Бизнес-процесс магазина</a></li>
-            </ul>
-        </nav>
-    </aside>
-
-    <!-- СЕКТОР 4: Подвал (Footer) -->
-    <footer class="footer">
-        <div class="footer__content">
-            <div class="footer__info">
-                <p class="footer__copy">&copy; 2023-2024 DiagramCode IDE. Все права защищены.</p>
-                <address class="footer__author" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                    Разработчик: <span itemprop="name">Ксения Хаджинова</span> | 
-                    Группа: <span itemprop="jobTitle">Студентка, Вариант 13</span>
-                </address>
-            </div>
-            <div class="footer__status" role="status" aria-live="polite">
-                <span class="status-dot status-dot--active"></span>
-                Движок Mermaid подключен
-            </div>
+    <!-- Подвал (Status Bar в ЛР 3) -->
+    <footer class="footer status-bar">
+        <div class="status-bar__info">
+            <span class="status-dot status-dot--active" id="net-dot"></span>
+            <span id="net-status">Engine: Connected</span>
+        </div>
+        <div class="status-bar__credits">
+            <span>Ксения Хаджинова</span>
+            <span class="status-bar__divider">|</span>
+            <span>Вариант 13</span>
         </div>
     </footer>
 
-    <!-- Модальное окно (ARIA) -->
-    <div id="ai-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <h2 id="modal-title" class="modal__title visually-hidden">ИИ Генератор</h2>
-        <!-- Контент модального окна -->
+    <!-- Модальное окно ИИ (ЛР 5) -->
+    <div class="modal" id="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-title">
+        <div class="modal__content">
+            <button class="modal__close" data-close aria-label="Close modal">&times;</button>
+            <form id="ai-form" class="ai-form">
+                <h2 class="ai-form__title" id="ai-title">AI Diagram Generator</h2>
+                <div class="form-group">
+                    <label for="ai-prompt">Enter prompt for diagram:</label>
+                    <textarea id="ai-prompt" placeholder="Describe your logic..." required></textarea>
+                    <span class="error-msg" id="error-prompt"></span>
+                </div>
+                <div class="modal__actions">
+                    <button type="submit" class="button button--primary">Generate Code</button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- Контейнер для всплывающих уведомлений (ЛР 5 Toasts) -->
+    <div id="toast-container" class="toast-container"></div>
 </body>
 </html>
