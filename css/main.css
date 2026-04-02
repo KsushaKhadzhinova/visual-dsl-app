@@ -1,66 +1,170 @@
+@import "variables.css";
+
 .workspace {
-    display: flex;
-    flex-direction: column; /* Mobile first: в колонку */
-}
-
-/* Редактор кода */
-.editor {
-    background: var(--color-bg-editor);
-    padding: 1rem;
-    color: #d1d5db;
-}
-
-.editor__textarea {
-    width: 100%;
-    height: 300px;
-    background: transparent;
-    border: none;
-    color: inherit;
-    font-family: var(--font-mono);
-    resize: none;
-    outline: none;
-}
-
-/* Холст диаграммы */
-.preview {
-    background: var(--color-bg-canvas);
-    padding: 2rem;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    background-color: var(--color-canvas-background);
+}
+
+.workspace__tab-radio {
+    display: none;
+}
+
+.workspace__tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-ui-border);
+    background-color: var(--color-white);
+    flex-shrink: 0;
+}
+
+.workspace__tab-label {
+    flex: 1;
+    display: flex;
     align-items: center;
-    background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
-    background-size: 20px 20px; /* Эффект сетки */
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: color var(--transition-speed), border-bottom-color var(--transition-speed);
+    border-bottom: 2px solid transparent;
+    user-select: none;
+}
+
+.workspace__tab-label i, 
+.workspace__tab-label svg {
+    color: var(--color-text-muted);
+}
+
+.workspace__editor {
+    display: flex;
+    flex: 1;
+    background-color: var(--color-editor-background);
+    overflow: hidden;
+}
+
+.editor__gutter {
+    width: 3.5rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem 0;
+    text-align: right;
+    color: #52525b;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.6;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.editor__gutter div {
+    padding-right: 0.75rem;
+}
+
+.editor__container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.editor__code {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: #d4d4d8;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    padding: 1rem;
+    resize: none;
+    outline: none;
+    tab-size: 4;
+    overflow: auto;
+}
+
+.workspace__preview {
+    display: flex;
+    flex: 1;
+    background-color: var(--color-canvas-background);
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.5rem;
+    overflow: auto;
+    background-image: radial-gradient(var(--color-ui-border) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.preview__canvas-wrapper {
+    width: 100%;
+    max-width: 640px;
+    background: var(--color-white);
+    padding: 1.5rem;
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-ui-border);
 }
 
 .preview__svg {
-    max-width: 100%;
+    width: 100%;
     height: auto;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    display: block;
 }
 
-/* Сетка фич через CSS Grid */
-.features__grid {
-    display: grid;
-    grid-template-columns: 1fr; /* 1 колонка на мобиле */
-    gap: 1.5rem;
-    padding: 2rem 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
+@media screen and (max-width: 1023px) {
+    #tab-code-radio:not(:checked) ~ .workspace__editor {
+        display: none;
+    }
+
+    #tab-diagram-radio:not(:checked) ~ .workspace__preview {
+        display: none;
+    }
+
+    #tab-code-radio:checked ~ .workspace__tabs label[for="tab-code-radio"],
+    #tab-diagram-radio:checked ~ .workspace__tabs label[for="tab-diagram-radio"] {
+        color: var(--color-accent-purple);
+        border-bottom-color: var(--color-accent-purple);
+    }
+
+    #tab-code-radio:checked ~ .workspace__tabs label[for="tab-code-radio"] i,
+    #tab-diagram-radio:checked ~ .workspace__tabs label[for="tab-diagram-radio"] i,
+    #tab-code-radio:checked ~ .workspace__tabs label[for="tab-code-radio"] svg,
+    #tab-diagram-radio:checked ~ .workspace__tabs label[for="tab-diagram-radio"] svg {
+        color: var(--color-accent-purple);
+    }
 }
 
-/* АДАПТИВНОСТЬ: DESKTOP */
-@media (min-width: 1024px) {
+@media screen and (min-width: 1024px) {
     .workspace {
         display: grid;
-        grid-template-columns: 450px 1fr; /* IDE вид: Слева код, справа холст */
-        height: calc(100vh - var(--header-height) - 2.5rem);
+        grid-template-columns: 440px 1fr;
     }
 
-    .features__grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 колонки */
+    .workspace__tabs {
+        display: none;
     }
-    
-    .editor__textarea {
-        height: 100%; /* Занимает всю высоту grid-ячейки */
+
+    .workspace__editor {
+        border-right: 1px solid var(--color-ui-border);
+    }
+
+    .workspace__editor, 
+    .workspace__preview {
+        display: flex !important;
+    }
+
+    .preview__canvas-wrapper {
+        margin-top: 2rem;
+        padding: 2.5rem;
+    }
+}
+
+@media screen and (min-width: 1440px) {
+    .workspace {
+        grid-template-columns: 520px 1fr;
     }
 }
