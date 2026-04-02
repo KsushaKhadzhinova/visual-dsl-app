@@ -1,24 +1,21 @@
 {
   "name": "diagram-code-ide",
   "version": "1.1.0",
-  "description": "Visual DSL Diagrammer - Профессиональная среда моделирования (Вариант 13)",
+  "description": "Visual DSL Diagrammer - Professional Modeling Environment (Variant 13)",
   "main": "js/script.js",
   "scripts": {
     "start": "live-server",
     "dev": "nodemon -e html,css,js --exec \"live-server\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo \"Сборка не требуется для проекта на чистом JS\""
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "ide",
     "dsl",
     "diagram",
     "bpmn",
-    "pure-js",
-    "bem",
-    "educational"
+    "pure-js"
   ],
-  "author": "Ксения Хаджинова, Софья Тетёркина",
+  "author": "Ксения Хаджинова",
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.21"

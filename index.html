@@ -3,131 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="DiagramCode — профессиональная IDE для визуализации диаграмм из кода (DSL).">
+    <meta name="description" content="DiagramCode — профессиональная IDE для визуального моделирования диаграмм из программного кода (DSL).">
+    <meta name="author" content="Ксения Хаджинова">
     <title>DiagramCode — Visual DSL Diagrammer IDE</title>
     
-    <!-- Подключение шрифтов -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
     
+    <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/styles.css">
-    <!-- JS подключается как модуль (ЛР 5/6) -->
-    <script type="module" src="js/script.js"></script>
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/footer.css">
 </head>
 
 <body class="page" itemscope itemtype="https://schema.org/SoftwareApplication">
-    <!-- Микроразметка Schema.org -->
     <meta itemprop="applicationCategory" content="DeveloperApplication">
     <meta itemprop="operatingSystem" content="Web">
     <meta itemprop="name" content="DiagramCode">
 
-    <!-- Доступность: Переход для скринридеров (ЛР 3) -->
     <a href="#main-content" class="skip-link">Пропустить навигацию</a>
 
-    <header class="header">
-        <div class="header__brand" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+    <header class="header" role="banner" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+        <div class="header__brand">
             <div class="header__logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Logo DiagramCode">
-                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="DiagramCode Logo">
+                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                    <line x1="3" y1="9" x2="21" y2="9"/>
+                    <line x1="9" y1="21" x2="9" y2="9"/>
                 </svg>
             </div>
             <span class="header__title" itemprop="name">DiagramCode</span>
         </div>
 
-        <nav class="header__nav" id="mobile-nav" aria-label="Главная навигация">
-            <ul class="header__menu">
-                <li class="header__item"><a href="#" class="header__link">Mermaid</a></li>
-                <li class="header__item"><a href="#" class="header__link">PlantUML</a></li>
-                <li class="header__item desktop-only">
-                    <button class="button button--primary button--run">Run</button>
-                </li>
-                <li class="header__item">
-                    <button class="button button--ai" aria-controls="ai-modal">AI Prompt</button>
-                </li>
-            </ul>
-        </nav>
+        <nav class="header__nav" aria-label="Верхняя панель инструментов">
+            <div class="header__actions desktop-only">
+                <div class="header__select-wrapper">
+                    <select class="header__select" aria-label="Выбор движка нотации">
+                        <option value="mermaid">Mermaid</option>
+                        <option value="plantuml">PlantUML</option>
+                    </select>
+                </div>
+                
+                <button class="button button--primary button--run" type="button">
+                    <span class="button__text">Run</span>
+                </button>
+                <button class="button button--outline" aria-controls="save-action">Save</button>
+                <button class="button button--outline" aria-controls="export-modal">Export</button>
+                <button class="button button--ai" aria-controls="ai-modal">AI Prompt</button>
+                <button class="button button--ghost" aria-controls="help-modal" aria-label="Открыть справку">
+                </button>
+            </div>
 
-        <div class="header__controls">
-            <!-- Бургер для мобильных устройств (ЛР 4/5) -->
-            <button class="header__burger" id="burger-btn" aria-expanded="false" aria-controls="mobile-nav">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
+            <div class="header__mobile-controls mobile-only">
+                <button class="button button--primary">Run</button>
+                <button class="header__burger" id="burger-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Открыть меню">
+                    <span class="header__burger-line"></span>
+                    <span class="header__burger-line"></span>
+                    <span class="header__burger-line"></span>
+                </button>
+            </div>
+        </nav>
     </header>
 
     <main class="workspace" id="main-content">
-        <!-- Скрытый H1 для SEO/A11y (ЛР 3) -->
-        <h1 class="visually-hidden">Интерактивный редактор DSL диаграмм</h1>
+        <h1 class="visually-hidden">Интерактивный редактор кода и визуализатор диаграмм</h1>
 
-        <!-- Боковая панель меню (ЛР 3 Aside) -->
-        <aside class="workspace__sidebar sidebar">
-            <h2 class="sidebar__title">Настройки</h2>
-            <div class="sidebar__section">
-                <label for="engine-select">Notation</label>
-                <select id="engine-select" class="sidebar__select">
-                    <option value="mermaid">Mermaid.js</option>
-                    <option value="plantuml">PlantUML</option>
-                </select>
-            </div>
-        </aside>
+        <div class="workspace__tabs mobile-only" role="tablist">
+            <button class="workspace__tab workspace__tab--active" role="tab" aria-selected="true" id="tab-code-btn">Code</button>
+            <button class="workspace__tab" role="tab" aria-selected="false" id="tab-diag-btn">Diagram</button>
+        </div>
 
-        <!-- Основная область IDE (Grid/Flex в ЛР 4) -->
-        <section class="workspace__editor editor">
-            <div class="editor__header">
-                <h2 class="editor__label">Source Code</h2>
+        <article class="workspace__editor editor">
+            <h2 class="visually-hidden">Текстовый редактор DSL кода</h2>
+            <div class="editor__gutter" aria-hidden="true">
+                <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
             </div>
-            <textarea class="editor__field" id="dsl-input" spellcheck="false" aria-label="DSL Code Editor">graph TD
+            <div class="editor__container">
+                <label for="dsl-input" class="visually-hidden">Поле ввода кода</label>
+                <textarea class="editor__textarea" id="dsl-input" spellcheck="false" autocomplete="off" aria-multiline="true">graph TD
     A[Start] --> B{Is it working?}
     B -->|Yes| C[Great!]
     B -->|No| D[Debug]
     D --> B
     C --> E[End]</textarea>
-        </section>
+            </div>
+        </article>
 
-        <!-- Область визуализации (ЛР 4 Canvas) -->
         <section class="workspace__preview preview">
-            <div class="preview__toolbar">
-                <h2 class="preview__label">Preview</h2>
-                <button class="button button--outline" aria-controls="export-modal">Export SVG</button>
-            </div>
-            <div class="preview__canvas" id="diagram-canvas">
-                <img src="images/placeholder.svg" alt="Preview Diagram Image" class="preview__svg">
-            </div>
+            <h2 class="visually-hidden">Визуальное представление</h2>
+            <figure class="preview__figure" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+                <div class="preview__canvas" id="canvas-area">
+                    <div class="diagram-mock" role="img" aria-label="Блок-схема процесса отладки">
+                        <div class="diagram-mock__node diagram-mock__node--blue">Start</div>
+                        <div class="diagram-mock__arrow"></div>
+                        <div class="diagram-mock__node diagram-mock__node--diamond">Is it working?</div>
+                        <div class="diagram-mock__path">
+                            <div class="diagram-mock__node diagram-mock__node--red">Debug</div>
+                            <div class="diagram-mock__node diagram-mock__node--green">Great!</div>
+                        </div>
+                    </div>
+                </div>
+                <figcaption class="preview__caption visually-hidden">Графическая визуализация алгоритма в реальном времени</figcaption>
+                <meta itemprop="description" content="Visual rendering of DSL code in Mermaid notation">
+            </figure>
         </section>
     </main>
 
-    <!-- Подвал (Status Bar в ЛР 3) -->
-    <footer class="footer status-bar">
+    <aside class="header__menu" id="mobile-menu" aria-hidden="true">
+        <div class="header__menu-header">
+            <h2 class="header__menu-main-title">Menu</h2>
+            <p class="header__menu-subtitle">Access notation settings and actions</p>
+            <button class="header__menu-close" aria-label="Закрыть меню">&times;</button>
+        </div>
+        
+        <nav class="header__menu-section" aria-labelledby="menu-notation-label">
+            <span class="header__menu-label" id="menu-notation-label">Notation</span>
+            <ul class="header__menu-list">
+                <li><button class="header__menu-btn header__menu-btn--active">Mermaid</button></li>
+                <li><button class="header__menu-btn">PlantUML</button></li>
+                <li><button class="header__menu-btn">Graphviz</button></li>
+                <li><button class="header__menu-btn">D2</button></li>
+            </ul>
+        </nav>
+
+        <nav class="header__menu-section" aria-labelledby="menu-actions-label">
+            <span class="header__menu-label" id="menu-actions-label">Actions</span>
+            <ul class="header__menu-list">
+                <li><button class="header__menu-btn">Save</button></li>
+                <li><button class="header__menu-btn">Export</button></li>
+                <li><button class="header__menu-btn header__menu-btn--accent">AI Prompt</button></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <footer class="status-bar" role="contentinfo">
         <div class="status-bar__info">
-            <span class="status-dot status-dot--active" id="net-dot"></span>
-            <span id="net-status">Engine: Connected</span>
+            <span class="status-bar__dot status-bar__dot--online" aria-hidden="true"></span>
+            <span class="status-bar__text">Engine: Connected</span>
         </div>
-        <div class="status-bar__credits">
-            <span>Ксения Хаджинова</span>
-            <span class="status-bar__divider">|</span>
-            <span>Вариант 13</span>
-        </div>
+        <address class="status-bar__author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+            <span class="status-bar__name" itemprop="name">Ксения Хаджинова</span>
+            <span class="status-bar__divider" aria-hidden="true">|</span>
+            <span class="status-bar__variant">Вариант 13</span>
+        </address>
     </footer>
 
-    <!-- Модальное окно ИИ (ЛР 5) -->
-    <div class="modal" id="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-title">
+    <section class="modal" id="export-modal" role="dialog" aria-modal="true" aria-labelledby="exp-title">
+        <div class="modal__overlay" data-close></div>
         <div class="modal__content">
-            <button class="modal__close" data-close aria-label="Close modal">&times;</button>
-            <form id="ai-form" class="ai-form">
-                <h2 class="ai-form__title" id="ai-title">AI Diagram Generator</h2>
-                <div class="form-group">
-                    <label for="ai-prompt">Enter prompt for diagram:</label>
-                    <textarea id="ai-prompt" placeholder="Describe your logic..." required></textarea>
-                    <span class="error-msg" id="error-prompt"></span>
+            <form id="export-form">
+                <div class="modal__header">
+                    <div>
+                        <h2 class="modal__title" id="exp-title">Export Diagram</h2>
+                        <p class="modal__description">Choose a format to export your diagram</p>
+                    </div>
+                    <button type="button" class="modal__close" data-close aria-label="Закрыть модальное окно">&times;</button>
                 </div>
-                <div class="modal__actions">
-                    <button type="submit" class="button button--primary">Generate Code</button>
+                <div class="modal__body">
+                    <fieldset class="export-options">
+                        <legend class="visually-hidden">Доступные форматы</legend>
+                        <label class="export-option">
+                            <input type="radio" name="fmt" value="svg" checked class="export-option__input">
+                            <span class="export-option__content">
+                                <span class="export-option__title">SVG</span>
+                                <span class="export-option__desc">Scalable Vector Graphics</span>
+                            </span>
+                        </label>
+                        <label class="export-option">
+                            <input type="radio" name="fmt" value="png" class="export-option__input">
+                            <span class="export-option__content">
+                                <span class="export-option__title">PNG</span>
+                                <span class="export-option__desc">Portable Network Graphics</span>
+                            </span>
+                        </label>
+                    </fieldset>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="button button--outline" data-close>Cancel</button>
+                    <button type="submit" class="button button--primary">Export as SVG</button>
                 </div>
             </form>
         </div>
-    </div>
+    </section>
 
-    <!-- Контейнер для всплывающих уведомлений (ЛР 5 Toasts) -->
-    <div id="toast-container" class="toast-container"></div>
+    <section class="modal" id="ai-modal" role="dialog" aria-modal="true" aria-labelledby="ai-title">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__content">
+            <form id="ai-form">
+                <div class="modal__header">
+                    <div>
+                        <h2 class="modal__title" id="ai-title">AI Prompt</h2>
+                        <p class="modal__description">Enter your prompt to generate a diagram</p>
+                    </div>
+                    <button type="button" class="modal__close" data-close aria-label="Закрыть">&times;</button>
+                </div>
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-label" for="ai-engine">Engine:</label>
+                        <select class="form-select" id="ai-engine">
+                            <option value="mermaid">Mermaid</option>
+                            <option value="plantuml">PlantUML</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="ai-prompt-input">Prompt</label>
+                        <textarea class="form-textarea" id="ai-prompt-input" required placeholder="Describe the diagram you want to create..."></textarea>
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="button button--outline" data-close>Close</button>
+                    <button type="submit" class="button button--ai">Generate</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__content modal__content--large">
+            <div class="modal__header">
+                <div>
+                    <h2 class="modal__title" id="help-title">Help / Documentation</h2>
+                    <p class="modal__description">Quick reference guide for BPMN diagram syntax</p>
+                </div>
+                <button type="button" class="modal__close" data-close aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div class="help-content">
+                    <h3 class="help-content__title">BPMN Syntax Quick Reference</h3>
+                    <p class="help-content__text">Business Process Model and Notation (BPMN) is a graphical representation for specifying business processes.</p>
+                    <div class="help-code-sample">
+                        <code>A[Start Process]</code><br>
+                        <code>B{Decision Point?}</code><br>
+                        <code>C(Process Task)</code>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="button button--primary button--full-width" data-close>Understood</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>
