@@ -1,25 +1,37 @@
-export const initModals = () => {
-    const triggers = document.querySelectorAll('[aria-controls]');
-    
-    triggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
+export function initModals() {
+    document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('[aria-controls]');
+        
+        if (trigger && !trigger.id.includes('burger')) {
             const modalId = trigger.getAttribute('aria-controls');
             const modal = document.getElementById(modalId);
+            
             if (modal) {
-                modal.classList.add('modal--active');
+                modal.classList.add('is-active');
                 document.body.style.overflow = 'hidden';
             }
-        });
-    });
+        }
 
-    // Делегирование событий для закрытия
-    document.addEventListener('click', (e) => {
-        if (e.target.hasAttribute('data-close') || e.target.classList.contains('modal')) {
-            const activeModal = document.querySelector('.modal--active');
-            if (activeModal) {
-                activeModal.classList.remove('modal--active');
+        const isCloseAction = event.target.closest('.modal__close') || 
+                             event.target.hasAttribute('data-close') || 
+                             event.target.classList.contains('modal__overlay');
+        
+        if (isCloseAction) {
+            const modal = event.target.closest('.modal');
+            if (modal) {
+                modal.classList.remove('is-active');
                 document.body.style.overflow = '';
             }
         }
     });
-};
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            const activeModal = document.querySelector('.modal.is-active');
+            if (activeModal) {
+                activeModal.classList.remove('is-active');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+}
