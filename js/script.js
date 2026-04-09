@@ -1,160 +1,190 @@
-
+import { ApiService } from './api/apiService.js';
+import { CONFIG } from './api/config.js';
+import { StorageService } from './storage/localStorage.js';
+import { DataParser } from './utils/dataParser.js';
+import { showToast, validateText } from './utils/helpers.js';
 import { initModals } from './components/modal.js';
-import { initEditor } from './components/editor.js';
-import { showToast, validateText, setElementError, clearElementError } from './utils/helpers.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-initModals();
-initEditor();
+    initModals();
 
-const burgerBtn = document.getElementById('burger-btn');
-const mobileMenu = document.getElementById('mobile-menu');
-const menuCloseBtn = document.getElementById('menu-close-btn');
+    const dslInput = document.getElementById('dsl-input');
+    const netDot = document.getElementById('status-dot-indicator');
+    const netText = document.getElementById('status-text-msg');
+    const templateContainer = document.getElementById('api-templates-list');
+    const refreshBtn = document.getElementById('api-refresh-btn');
+    const runBtn = document.getElementById('run-btn');
+    const mobileRunBtn = document.getElementById('mobile-run-btn');
+    const renderArea = document.getElementById('render-area');
 
-const toggleMenu = () => {
-    const isActive = mobileMenu.classList.toggle('is-active');
-    burgerBtn.setAttribute('aria-expanded', isActive);
-    mobileMenu.setAttribute('aria-hidden', !isActive);
-    document.body.style.overflow = isActive ? 'hidden' : '';
-};
+    const updateOnlineStatus = () => {
+        const isOnline = navigator.onLine;
+        netDot.style.backgroundColor = isOnline ? '#10B981' : '#EF4444';
+        netText.textContent = isOnline ? 'Engine: Connected' : 'Engine: Offline Mode';
+        
+        if (!isOnline) {
+            showToast('Network connection lost. Offline mode active.', 'error');
+        } else {
+            showToast('System is online.');
+        }
+    };
 
-if (burgerBtn) burgerBtn.addEventListener('click', toggleMenu);
-if (menuCloseBtn) menuCloseBtn.addEventListener('click', toggleMenu);
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
-const dslInput = document.getElementById('dsl-input');
-const canvasPlaceholder = document.getElementById('canvas-placeholder');
-const runButtons = [document.getElementById('run-btn'), document.getElementById('mobile-run-btn')];
+    const loadRemoteTemplates = async (forceSync = false) => {
+        const cacheKey = CONFIG.STORAGE.TEMPLATES_CACHE;
+        const oneHour = 3600000;
 
-const executeDiagram = () => {
-    if (!dslInput.value.trim()) {
-        showToast('Editor is empty', 'error');
-        return;
-    }
+        if (!forceSync && !StorageService.isExpired(cacheKey, oneHour)) {
+            const cached = StorageService.load(cacheKey);
+            if (cached) {
+                renderSidebarTemplates(cached.data);
+                return;
+            }
+        }
 
-    canvasPlaceholder.textContent = 'Processing...';
-    canvasPlaceholder.style.opacity = '0.5';
-    showToast('Compiling diagram DSL...');
-
-    setTimeout(() => {
-        canvasPlaceholder.innerHTML = `<div style="text-align:center; padding: 2rem;"><h3>Diagram Generated Successfully</h3><p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">Rendered at ${new Date().toLocaleTimeString()}</p></div>`;
-        canvasPlaceholder.style.opacity = '1';
-        showToast('Render complete', 'success');
-    }, 1200);
-};
-
-runButtons.forEach(btn => {
-    if (btn) btn.addEventListener('click', executeDiagram);
-});
-
-const saveBtn = document.getElementById('save-btn');
-const mobileSaveBtn = document.getElementById('mobile-save-btn');
-
-const performSave = () => {
-    showToast('Draft saved to storage');
-};
-
-if (saveBtn) saveBtn.addEventListener('click', performSave);
-if (mobileSaveBtn) mobileSaveBtn.addEventListener('click', performSave);
-
-const aiForm = document.getElementById('ai-form');
-const promptInput = document.getElementById('ai-prompt-input');
-
-if (aiForm) {
-    aiForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const promptValue = promptInput.value.trim();
-
-        if (!validateText(promptValue, 10)) {
-            setElementError(promptInput, 'Please provide more context (min 10 characters)');
+        if (!navigator.onLine) {
+            const cached = StorageService.load(cacheKey);
+            if (cached) renderSidebarTemplates(cached.data);
             return;
         }
 
-        clearElementError(promptInput);
-        const submitBtn = document.getElementById('ai-generate-btn');
-        const originalText = submitBtn.innerHTML;
+        templateContainer.innerHTML = '<div class="loader-skeleton"></div><div class="loader-skeleton"></div>';
         
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Analyzing...';
-
-        setTimeout(() => {
-            const generatedDSL = `graph TD\n    A[${promptValue.substring(0, 10)}...] --> B(AI Neural Logic)\n    B --> C{Decision Path}\n    C -- Yes --> D[Result Output]\n    C -- No --> E[Retry Mode]`;
-            dslInput.value = generatedDSL;
+        try {
+            const rawData = await ApiService.fetchTemplates();
+            const processedData = DataParser.parseTemplatesFromApi(rawData);
             
-            const event = new Event('input', { bubbles: true });
-            dslInput.dispatchEvent(event);
-            
-            showToast('AI Prompt processed');
-            document.getElementById('ai-modal').classList.remove('is-active');
-            document.body.style.overflow = '';
-            
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-        }, 2500);
-    });
-
-    promptInput.addEventListener('input', () => {
-        if (validateText(promptInput.value, 10)) {
-            clearElementError(promptInput);
+            StorageService.saveWithMeta(cacheKey, processedData);
+            renderSidebarTemplates(processedData);
+        } catch (error) {
+            showToast('Failed to sync templates', 'error');
+            templateContainer.innerHTML = '<div style="padding:1rem; font-size:11px; color:#ef4444;">Sync Error</div>';
         }
-    });
-}
+    };
 
-const confirmExportBtn = document.getElementById('confirm-export-btn');
-if (confirmExportBtn) {
-    confirmExportBtn.addEventListener('click', () => {
-        const formatRadio = document.querySelector('input[name="fmt"]:checked');
-        if (formatRadio) {
-            const format = formatRadio.value;
-            showToast(`Preparing download: diagram.${format}...`);
-            
-            setTimeout(() => {
-                document.getElementById('export-modal').classList.remove('is-active');
-                document.body.style.overflow = '';
-                showToast('File downloaded successfully', 'success');
-            }, 1500);
-        }
-    });
-}
+    const renderSidebarTemplates = (templates) => {
+        templateContainer.innerHTML = templates.map(t => `
+            <div class="template-card-ui" data-code="${t.dslCode}">
+                <div class="template-card-ui__header">
+                    <span class="template-card-ui__tag">${t.category}</span>
+                </div>
+                <h4 class="template-card-ui__title">${t.displayTitle}</h4>
+                <p class="template-card-ui__desc">Example ${t.id} pattern</p>
+            </div>
+        `).join('');
 
-const notationItems = document.querySelectorAll('.header__menu-btn');
-notationItems.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const text = btn.textContent.trim();
-        const isAction = btn.id?.includes('save') || btn.hasAttribute('aria-controls');
-        
-        if (!isAction) {
-            notationItems.forEach(item => {
-                if (!item.hasAttribute('aria-controls')) {
-                    item.classList.remove('header__menu-btn--active');
-                }
+        templateContainer.querySelectorAll('.template-card-ui').forEach(card => {
+            card.addEventListener('click', () => {
+                const code = card.getAttribute('data-code');
+                dslInput.value = code;
+                dslInput.dispatchEvent(new Event('input'));
+                showToast('Template applied');
+                triggerRender();
             });
-            btn.classList.add('header__menu-btn--active');
-            showToast(`Syntax set to: ${text}`);
+        });
+    };
+
+    const triggerRender = async () => {
+        const code = dslInput.value.trim();
+        if (!code) return;
+
+        renderArea.style.opacity = '0.4';
+        
+        try {
+            const engine = document.getElementById('engine-select').value;
+            
+            if (typeof mermaid !== 'undefined' && engine === 'mermaid') {
+                const { svg } = await mermaid.render('mermaid-svg-' + Date.now(), code);
+                renderArea.innerHTML = svg;
+            } else {
+                renderArea.innerHTML = `<div class="placeholder-fallback">Render preview logic for ${engine}</div>`;
+            }
+            
+            showToast('Diagram compiled', 'success');
+        } catch (e) {
+            console.error(e);
+            showToast('DSL Syntax Error', 'error');
+        } finally {
+            renderArea.style.opacity = '1';
         }
+    };
+
+    if (refreshBtn) refreshBtn.addEventListener('click', () => loadRemoteTemplates(true));
+    if (runBtn) runBtn.addEventListener('click', triggerRender);
+    if (mobileRunBtn) mobileRunBtn.addEventListener('click', triggerRender);
+
+    const savedDraft = StorageService.load(CONFIG.STORAGE.CODE_DRAFT);
+    dslInput.value = savedDraft || CONFIG.DEFAULTS.DSL_CODE;
+
+    dslInput.addEventListener('input', (e) => {
+        const metrics = DataParser.getDslMetrics(e.target.value);
+        StorageService.save(CONFIG.STORAGE.CODE_DRAFT, e.target.value);
     });
-});
 
-const engineSelect = document.getElementById('engine-select');
-if (engineSelect) {
-    engineSelect.addEventListener('change', (e) => {
-        showToast(`Rendering Engine changed to ${e.target.value.toUpperCase()}`);
-    });
-}
+    const aiForm = document.getElementById('ai-request-form');
+    if (aiForm) {
+        aiForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const promptArea = document.getElementById('ai-prompt-area');
+            const prompt = promptArea.value.trim();
 
-window.addEventListener('online', () => {
-    const dot = document.getElementById('status-dot');
-    const text = document.getElementById('status-text');
-    dot.className = 'status-bar__dot status-bar__dot--online';
-    text.textContent = 'Engine: Connected';
-    showToast('System online');
-});
+            if (!validateText(prompt, CONFIG.VALIDATION.MIN_PROMPT_LENGTH)) {
+                showToast('Description too short', 'error');
+                return;
+            }
 
-window.addEventListener('offline', () => {
-    const dot = document.getElementById('status-dot');
-    const text = document.getElementById('status-text');
-    dot.className = 'status-bar__dot';
-    dot.style.backgroundColor = '#EF4444';
-    text.textContent = 'Engine: Offline';
-    showToast('Connection lost', 'error');
-});
+            const actionBtn = document.getElementById('ai-action-btn');
+            const originalHTML = actionBtn.innerHTML;
+            
+            actionBtn.disabled = true;
+            actionBtn.innerHTML = 'AI Thinking...';
 
+            try {
+                const engine = document.getElementById('ai-engine-select').value;
+                const result = await ApiService.simulateAIGenerate(prompt, engine);
+                
+                dslInput.value = result.suggestedCode;
+                dslInput.dispatchEvent(new Event('input'));
+                
+                showToast('AI Generation successful');
+                document.getElementById('ai-modal').classList.remove('is-active');
+                document.body.style.overflow = '';
+                
+                triggerRender();
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                actionBtn.disabled = false;
+                actionBtn.innerHTML = originalHTML;
+            }
+        });
+    }
+
+    const exportActionBtn = document.getElementById('confirm-export-action');
+    if (exportActionBtn) {
+        exportActionBtn.addEventListener('click', async () => {
+            const format = document.querySelector('input[name="export-fmt"]:checked').value;
+            const meta = DataParser.prepareExportMeta('diagram', format);
+            
+            showToast(`Generating ${format.toUpperCase()} file...`);
+            
+            await new Promise(r => setTimeout(r, 1000));
+            
+            showToast('Export successful: ' + meta.fullName, 'success');
+            document.getElementById('export-modal').classList.remove('is-active');
+            document.body.style.overflow = '';
+        });
+    }
+
+    loadRemoteTemplates();
+
+    setTimeout(() => {
+        if (typeof mermaid !== 'undefined') {
+            mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
+            triggerRender();
+        }
+    }, 500);
 });
