@@ -4,147 +4,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DiagramCode - Professional DSL Diagram Editor</title>
+<title>DiagramCode - Visual DSL Tool</title>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/footer.css">
 </head>
-<body class="app-page">
+<body class="page">
+<div class="app">
+<a href="#main-layout" class="skip-link sr-only">Skip to editor</a>
 
-<a href="#main-content" class="skip-link sr-only">Skip to main content</a>
-
-<header class="toolbar" itemscope itemtype="https://schema.org/SoftwareApplication">
-    <div class="toolbar__left">
-        <div class="logo">
-            <div class="logo__icon" aria-hidden="true"></div>
-            <h1 class="logo__title" itemprop="name">DiagramCode</h1>
-        </div>
-
-        <nav class="notation-select">
-            <div class="dropdown">
-                <button class="dropdown__trigger btn btn--outline btn--sm" aria-haspopup="listbox" aria-expanded="false">
-                    Notation
-                </button>
-                <ul class="dropdown__menu hidden" role="listbox">
-                    <li class="dropdown__option" role="option">Mermaid</li>
-                    <li class="dropdown__option" role="option">PlantUML</li>
-                    <li class="dropdown__option" role="option">Graphviz</li>
-                    <li class="dropdown__option" role="option">D2</li>
-                </ul>
+<header class="header">
+        <div class="header__toolbar toolbar">
+            <div class="toolbar__section toolbar__section--left">
+                <div class="logo">
+                    <div class="logo__icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 4L10 10M10 10L16 4M10 10L4 16M10 10L16 16" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+                    </div>
+                    <span class="logo__text">DiagramCode</span>
+                </div>
+                <nav class="header__nav nav-desktop">
+                    <div class="dropdown">
+                        <button class="btn btn--outline btn--sm dropdown__trigger">
+                            Notation
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                </nav>
             </div>
+
+            <div class="toolbar__section toolbar__section--right">
+                <div class="actions-desktop">
+                    <button class="btn btn--primary">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" fill="currentColor"/></svg>
+                        Run
+                    </button>
+                    <button class="btn btn--outline">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+                        Save
+                    </button>
+                    <button class="btn btn--outline">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export
+                    </button>
+                    <button class="btn btn--outline">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                        AI Prompt
+                    </button>
+                    <button class="btn btn--ghost btn--icon" aria-label="Help">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </button>
+                </div>
+
+                <div class="actions-mobile">
+                    <button class="btn btn--primary btn--sm">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" fill="currentColor"/></svg>
+                        Run
+                    </button>
+                    <button class="btn btn--outline btn--icon" aria-label="Menu">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main" id="main-layout">
+        <nav class="mobile-tabs" aria-label="Switch views">
+            <button class="mobile-tabs__item">Code</button>
+            <button class="mobile-tabs__item mobile-tabs__item--active">Diagram</button>
         </nav>
-    </div>
 
-    <div class="toolbar__actions">
-        <div class="actions-group">
-            <button class="btn btn--primary">Run</button>
-            <button class="btn btn--outline">Save</button>
-            
-            <div class="dropdown">
-                <button class="btn btn--outline" aria-label="Export settings">Export</button>
-            </div>
+        <div class="workspace">
+            <section class="pane pane--editor" aria-labelledby="code-title">
+                <h2 class="sr-only" id="code-title">DSL Code Editor</h2>
+                <header class="pane__toolbar">
+                    <span class="pane__filename">diagram.mermaid</span>
+                    <div class="pane__settings">
+                        <span class="pane__label">Dark Mode</span>
+                        <div class="toggle toggle--checked"></div>
+                    </div>
+                </header>
+                <div class="editor-layout">
+                    <div class="editor-layout__gutter" aria-hidden="true">
+                        <div class="editor-layout__line">1</div>
+                        <div class="editor-layout__line">2</div>
+                        <div class="editor-layout__line">3</div>
+                        <div class="editor-layout__line">4</div>
+                        <div class="editor-layout__line">5</div>
+                        <div class="editor-layout__line">6</div>
+                    </div>
+                    <div class="editor-layout__code">
+                        <code>graph TD<br>&nbsp;&nbsp;&nbsp;&nbsp;A[Start] --&gt; B{Is it working?}<br>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|Yes| C[Great!]<br>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|No| D[Debug]<br>&nbsp;&nbsp;&nbsp;&nbsp;D --&gt; B<br>&nbsp;&nbsp;&nbsp;&nbsp;C --&gt; E[End]</code>
+                    </div>
+                </div>
+            </section>
 
-            <button class="btn btn--outline btn--accent">AI Prompt</button>
+            <div class="workspace__resizer" role="separator" aria-label="Panel separator"></div>
+
+            <section class="pane pane--canvas" aria-labelledby="canvas-title">
+                <h2 class="sr-only" id="canvas-title">Visualized Diagram</h2>
+                <div class="canvas-viewport">
+                    <div class="canvas-viewport__container">
+                        <img src="images/placeholder-diagram.svg" alt="Preview of rendered BPMN diagram" class="canvas-viewport__img">
+                    </div>
+                </div>
+            </section>
         </div>
 
-        <button class="btn btn--ghost btn--icon" aria-label="Documentation">?</button>
-    </div>
-
-    <meta itemprop="applicationCategory" content="DesignApplication">
-    <meta itemprop="operatingSystem" content="Web">
-</header>
-
-<main class="main-layout" id="main-content">
-    <div class="mobile-tabs hidden">
-        <button class="mobile-tabs__btn mobile-tabs__btn--active">Code</button>
-        <button class="mobile-tabs__btn">Diagram</button>
-    </div>
-
-    <div class="workspace-split">
-        <section class="pane pane--editor" aria-labelledby="editor-title">
-            <header class="pane__header">
-                <h2 class="pane__title" id="editor-title">Editor</h2>
-                <div class="pane__controls">
-                    <label class="switch">
-                        Dark Mode
-                        <input type="checkbox" checked>
-                    </label>
-                </div>
+        <aside class="terminal terminal--collapsed">
+            <header class="terminal__header">
+                <span class="terminal__label">Terminal Output</span>
+                <time class="terminal__time" datetime="10:15">10:15 AM</time>
             </header>
-
-            <article class="code-editor">
-                <div class="code-editor__gutter" aria-hidden="true">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
-                </div>
-                <div class="code-editor__content">
-                    <pre><code>graph TD
-A[Start] --> B{Is it working?}
-B -->|Yes| C[Great!]
-B -->|No| D[Debug]
-D --> B
-C --> E[End]</code></pre>
-                </div>
-            </article>
-        </section>
-
-        <div class="pane-resizer" role="separator" aria-label="Resize panels"></div>
-
-        <section class="pane pane--diagram" aria-labelledby="canvas-title">
-            <h2 class="sr-only" id="canvas-title">Visual Viewport</h2>
-            <div class="diagram-canvas">
-                <figure class="diagram-canvas__content">
-                    <img src="images/placeholder-diagram.svg" alt="Generated Flowchart showing decision paths" class="diagram-canvas__image">
-                    <figcaption class="sr-only">Visual representation of the DSL code defined in the editor</figcaption>
-                </figure>
-
-                <div class="visual-controls hidden">
-                    <button class="visual-controls__btn" aria-label="Edit node"></button>
-                    <button class="visual-controls__btn" aria-label="Connect elements"></button>
-                </div>
+            <div class="terminal__content">
+                <p class="terminal__log terminal__log--success">&gt; Successful render in 14ms</p>
             </div>
-        </section>
-    </div>
+        </aside>
+    </main>
 
-    <aside class="terminal-panel terminal-panel--collapsed" aria-label="System console">
-        <header class="terminal-panel__header">
-            <h3 class="terminal-panel__title">Terminal Output</h3>
-            <div class="terminal-panel__meta">
-                <time datetime="2026-04-10T10:15">10:15 AM</time>
-            </div>
-        </header>
-        <section class="terminal-panel__body">
-            <p class="terminal-log terminal-log--info">&gt; Layout engine: Mermaid-RD active</p>
-            <p class="terminal-log terminal-log--success">&gt; Rendered successful in 120ms</p>
-        </section>
-    </aside>
-</main>
-
-<footer class="status-bar" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-    <div class="status-bar__left">
-        <span class="status-indicator"></span>
-        <span class="status-text">Server connected</span>
-    </div>
-    <div class="status-bar__right">
-        <span>Lines: 6</span>
-        <span>UTF-8</span>
-        <span itemprop="price" content="0">Free</span>
-        <meta itemprop="priceCurrency" content="USD">
-    </div>
-</footer>
-
-<section class="dialog-layer hidden">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <header class="modal__header">
-            <h2 class="modal__title" id="modal-title">Documentation</h2>
-            <button class="modal__close" aria-label="Close dialog">&times;</button>
-        </header>
-        <div class="modal__body">
-            <article class="doc-section">
-                <h3>Syntax Guide</h3>
-                <p>Refer to the standard diagram notations here.</p>
-            </article>
+    <footer class="footer">
+        <div class="footer__side">
+            <span class="status-indicator"></span>
+            <span class="footer__text">Cloud Status: Connected</span>
         </div>
-    </div>
-</section>
+        <div class="footer__side">
+            <span class="footer__text">UTF-8</span>
+            <span class="footer__text">Rows: 6</span>
+        </div>
+    </footer>
+</div>
 
-<div id="notifications-root" class="toast-manager" aria-live="assertive"></div>
+<div class="overlay hidden" aria-hidden="true"></div>
+<div id="toast-manager" class="toast-area" aria-live="polite"></div>
 
 </body>
 </html>
