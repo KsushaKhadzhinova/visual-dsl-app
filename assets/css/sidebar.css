@@ -1,0 +1,17 @@
+.log--error { color: var(--error); }
+.log--success { color: var(--success); }
+.log--info { color: var(--text-muted); }
+
+.stats-panel {
+    padding: 10px 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.stats-item {
+    margin-bottom: 5px;
+}
+
+.stats-item strong {
+    color: var(--accent);
+}

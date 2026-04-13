@@ -1,0 +1,23 @@
+:root {
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252526;
+    --bg-sidebar: #252526;
+    --bg-activity: #333333;
+    --bg-status: #007acc;
+    --bg-terminal: #1e1e1e;
+    --text-main: #cccccc;
+    --text-bright: #ffffff;
+    --text-muted: #858585;
+    --accent: #007acc;
+    --accent-hover: #118ad4;
+    --border: #3c3c3c;
+    --error: #f48771;
+    --warning: #cca700;
+    --success: #89d185;
+    --header-height: 35px;
+    --status-height: 22px;
+    --activity-width: 48px;
+    --sidebar-width: 260px;
+    --font-sans: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'Fira Code', monospace;
+}

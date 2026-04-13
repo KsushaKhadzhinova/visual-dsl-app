@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisualDSL Studio — Professional DSL Editor</title>
+    <title>VisualDSL Studio — Professional SaaS Diagram Editor</title>
     <link rel="stylesheet" href="assets/css/variables.css">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
     <link rel="stylesheet" href="assets/css/header.css">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/activity-bar.css">
     <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/editor.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/terminal.css">
+    <link rel="stylesheet" href="assets/css/status-bar.css">
+    <link rel="stylesheet" href="assets/css/toast.css">
     <link rel="stylesheet" href="assets/css/modal.css">
+    <link rel="stylesheet" href="assets/css/diff-view.css">
+    <link rel="stylesheet" href="assets/css/templates-list.css">
     <link rel="stylesheet" href="assets/css/footer.css">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "VisualDSL",
+        "name": "VisualDSL Studio",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Web",
         "author": {
@@ -30,133 +38,174 @@
     }
     </script>
 </head>
-<body class="page dark-theme">
-    <a href="#main" class="button" style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">Перейти к основному контенту</a>
+<body class="ide dark-theme">
+    <a href="#main-editor" class="skip-link" style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">Перейти к основному содержимому</a>
 
-    <header class="header">
-        <div class="header__container">
-            <div class="header__logo-block" id="logo-container">
-            </div>
+    <aside class="ide__activity activity-bar" role="navigation" aria-label="Панель активности">
+        <button class="activity-bar__item activity-bar__item--active" id="btn-explorer" aria-label="Проводник">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+        </button>
+        <button class="activity-bar__item" id="btn-search" aria-label="Поиск">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button class="activity-bar__item" id="btn-git" aria-label="Исходный код">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 9v7"/><path d="M18 15v-1a6 6 0 0 0-12 0v1"/></svg>
+        </button>
+        <button class="activity-bar__item" id="btn-pricing" aria-label="Тарифы">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </button>
+    </aside>
 
-            <nav class="header__nav" aria-label="Верхняя панель">
-                <div class="dropdown">
-                    <button class="button button--secondary dropdown__toggle" id="notationBtn" data-current="Mermaid" aria-haspopup="true" aria-expanded="false">
-                        Mermaid <span class="dropdown__arrow" aria-hidden="true">▼</span>
-                    </button>
-                    <ul class="dropdown__menu" id="notationMenu" role="menu">
-                        <li class="dropdown__item" data-value="Mermaid" role="menuitem">Mermaid</li>
-                        <li class="dropdown__item" data-value="PlantUML" role="menuitem">PlantUML</li>
-                        <li class="dropdown__item" data-value="Graphviz" role="menuitem">Graphviz</li>
-                        <li class="dropdown__item" data-value="D2" role="menuitem">D2</li>
-                    </ul>
+    <aside class="ide__sidebar sidebar" id="sidebar">
+        <header class="sidebar__header">
+            <h2>Explorer</h2>
+        </header>
+        <div class="sidebar__content">
+            <section class="sidebar__section">
+                <div class="sidebar__section-title">Templates</div>
+                <div class="templates">
+                    <article class="template-card" data-template="flowchart">
+                        <div class="template-card__icon">📊</div>
+                        <h3 class="template-card__name">Flowchart</h3>
+                    </article>
+                    <article class="template-card" data-template="sequence">
+                        <div class="template-card__icon">🔄</div>
+                        <h3 class="template-card__name">Sequence</h3>
+                    </article>
+                    <article class="template-card" data-template="class">
+                        <div class="template-card__icon">🏗️</div>
+                        <h3 class="template-card__name">Class</h3>
+                    </article>
                 </div>
-                
-                <button class="button button--primary" id="runBtn" aria-label="Сгенерировать диаграмму"></button>
+            </section>
+            <section class="sidebar__section">
+                <div class="sidebar__section-title">Usage Stats</div>
+                <div class="stats-panel" id="usage-stats">
+                    <div class="stats-item">
+                        <span>Nodes:</span> <strong id="stat-nodes">0</strong>
+                    </div>
+                    <div class="stats-item">
+                        <span>Edges:</span> <strong id="stat-edges">0</strong>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </aside>
 
-                <button class="button button--secondary icon-only" id="helpBtn" data-modal-target="modal-help" aria-label="Справка"></button>
-
-                <button class="header__burger" id="burgerBtn" aria-label="Открыть мобильное меню">
-                    <span></span><span></span><span></span>
-                </button>
-            </nav>
+    <header class="ide__header header">
+        <nav class="breadcrumbs" aria-label="Путь к файлу">
+            <div class="breadcrumbs__item">src</div>
+            <div class="breadcrumbs__separator">/</div>
+            <div class="breadcrumbs__item">diagrams</div>
+            <div class="breadcrumbs__separator">/</div>
+            <div class="breadcrumbs__item breadcrumbs__item--active">main.dsl</div>
+        </nav>
+        <div class="header__actions">
+            <button class="button button--primary" id="runBtn">Run</button>
+            <button class="button button--secondary" id="saveBtn">Save</button>
+            <button class="button button--secondary" id="supportBtn">Support</button>
         </div>
     </header>
 
-    <nav class="tabs" aria-label="Виды редактора">
-        <button class="tabs__btn tabs__btn--active" data-target="code">Code</button>
-        <button class="tabs__btn" data-target="diagram">Diagram</button>
-    </nav>
-
-    <main class="main-content" id="main">
-        <section class="editor-section" id="codePanel" aria-label="Область кода">
-            <div class="line-numbers" id="lineNumbers" aria-hidden="true"></div>
-            <textarea class="editor-input" id="dslEditor" spellcheck="false" autocomplete="off" aria-label="Ввод DSL кода">graph TD
+    <main class="ide__main main" id="main-editor">
+        <section class="main__editor editor">
+            <div class="editor__line-numbers" id="line-numbers">1</div>
+            <textarea class="editor__content" id="dsl-input" spellcheck="false">graph TD
     A[Start] --> B{Is it working?}
     B -->|Yes| C[Great!]
     B -->|No| D[Debug]
-    D --> B
-    C --> E[End]</textarea>
+    D --> B</textarea>
         </section>
-
-        <section class="diagram-section" id="diagramPanel" aria-label="Область предварительного просмотра">
-            <div class="canvas" id="canvas">
-            </div>
+        <section class="main__preview" id="preview-panel">
+            <div id="canvas" class="canvas"></div>
         </section>
     </main>
 
-    <aside class="mobile-menu" id="mobileMenu">
-        <div class="mobile-menu__header">
-            <div id="mobile-logo-container"></div>
-            <button class="close-btn" id="closeMenu" aria-label="Закрыть меню">&times;</button>
-        </div>
-        <nav class="mobile-menu__nav" aria-label="Навигация в мобильном меню">
-            <div class="mobile-menu__section">
-                <h3 id="label-notation">Notation</h3>
-                <ul class="mobile-menu__list" aria-labelledby="label-notation">
-                    <li data-value="Mermaid">Mermaid</li>
-                    <li data-value="PlantUML">PlantUML</li>
-                    <li data-value="D2">D2</li>
-                </ul>
-            </div>
-            <div class="mobile-menu__actions">
-                <button class="button button--full button--secondary" id="mobileSave">Save Code</button>
-                <button class="button button--full button--secondary" id="mobileExport">Export PNG</button>
-                <button class="button button--full button--accent" id="mobileAi" data-modal-target="modal-ai">AI Assistant</button>
-            </div>
-            <div class="profile-block">
-                <div id="user-profile" class="profile-container"></div>
-                <div style="margin-left: 12px">
-                    <p style="font-size: 14px; font-weight: 600">Ksusha K.</p>
-                    <p style="font-size: 11px; color: var(--text-muted)">User Administrator</p>
-                </div>
-            </div>
+    <section class="ide__terminal terminal">
+        <nav class="terminal__tabs" role="tablist">
+            <button class="terminal__tab terminal__tab--active" role="tab" aria-selected="true">Terminal</button>
+            <button class="terminal__tab" role="tab" aria-selected="false">Problems</button>
+            <button class="terminal__tab" role="tab" aria-selected="false">Output</button>
         </nav>
-    </aside>
-
-    <article class="modal" id="modal-help" aria-modal="true" role="dialog">
-        <div class="modal__header">
-            <h3>Quick Start Guide</h3>
-            <button class="modal__close" aria-label="Закрыть">&times;</button>
+        <div class="terminal__output" id="terminal-output">
+            <p>> Initializing VisualDSL Engine...</p>
+            <p>> Ready.</p>
         </div>
-        <div class="modal__body">
-            <p>Используйте синтаксис Mermaid или PlantUML для описания процессов. Каждая стрелка "-->" создает связь между объектами.</p>
-            <div class="modal__code-block" aria-hidden="true">
-                graph TD<br>
-                A[Start] --> B[Result]
+    </section>
+
+    <footer class="ide__status status-bar">
+        <div class="status-bar__left">
+            <div class="status-bar__item">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-2 0-4.5 1.5-2.1-.5-4.4-.5-6.5 0C4.5 2 2.5 2 2.5 2c-.28 1.15-.28 2.35 0 3.5-.73 1.02-1.08 2.25-1 3.5 0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                main*
             </div>
-            <p>Результат генерации отобразится на панели превью справа (или во вкладке Diagram на мобильных).</p>
+            <div class="status-bar__item">0 ⚠ 0 ✘</div>
         </div>
-        <div class="modal__footer">
-            <button class="button button--primary close-btn">Понятно</button>
-        </div>
-    </article>
-
-    <article class="modal" id="modal-ai" aria-modal="true" role="dialog">
-        <div class="modal__header">
-            <h3>AI Prompt Generator</h3>
-            <button class="modal__close" aria-label="Закрыть">&times;</button>
-        </div>
-        <div class="modal__body">
-            <p>Опишите желаемую диаграмму естественным языком:</p>
-            <textarea class="editor-input" style="background:#000; width:100%; height:120px; border:1px solid var(--border-color); border-radius:6px; color:white; padding:12px;" placeholder="Пример: Создай схему аутентификации пользователя..."></textarea>
-        </div>
-        <div class="modal__footer">
-            <button class="button button--primary" id="generateAi">Сгенерировать</button>
-        </div>
-    </article>
-
-    <footer class="footer">
-        <div class="footer__content">
-            <time datetime="2026">2026</time> © VisualDSL Studio — Pixel Perfect Lab 3-6. Все кнопки и иконки сгенерированы динамически через JavaScript API.
+        <div class="status-bar__right">
+            <div class="status-bar__item" id="cursor-pos">Ln 1, Col 1</div>
+            <div class="status-bar__item">UTF-8</div>
+            <div class="status-bar__item">Mermaid</div>
         </div>
     </footer>
 
-    <div class="overlay" id="overlay"></div>
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="modal-overlay" id="modal-overlay" hidden>
+        <article class="modal" id="modal-pricing" hidden>
+            <header class="modal__header">
+                <h3>SaaS Pricing Plans</h3>
+                <button class="modal__close" aria-label="Закрыть">&times;</button>
+            </header>
+            <div class="modal__body">
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h4>Free</h4>
+                        <p class="price">$0</p>
+                        <ul>
+                            <li>5 Diagrams</li>
+                            <li>Standard Export</li>
+                        </ul>
+                        <button class="button button--primary">Current</button>
+                    </div>
+                    <div class="pricing-card pricing-card--featured">
+                        <h4>Pro</h4>
+                        <p class="price">$19/mo</p>
+                        <ul>
+                            <li>Unlimited Diagrams</li>
+                            <li>HD Export</li>
+                            <li>AI Assistant</li>
+                        </ul>
+                        <button class="button button--primary">Upgrade</button>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="modal" id="modal-support" hidden>
+            <header class="modal__header">
+                <h3>Feedback & Support</h3>
+                <button class="modal__close" aria-label="Закрыть">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="support-form" class="form">
+                    <div class="form__group">
+                        <label for="support-email">Email:</label>
+                        <input type="email" id="support-email" required class="form__input">
+                    </div>
+                    <div class="form__group">
+                        <label for="support-msg">Message:</label>
+                        <textarea id="support-msg" required class="form__input" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="button button--primary">Send Feedback</button>
+                </form>
+            </div>
+        </article>
+    </div>
+
+    <footer class="footer">
+        VisualDSL Studio v1.0.0 | © 2026 | <time datetime="2026-03-05">Lab 3-6</time>
+    </footer>
 
     <script type="module" src="js/script.js"></script>
-    <script src="js/components/editor.js"></script>
-    <script src="js/components/modal.js"></script>
-    <script src="js/components/dropdown.js"></script>
-    <script src="js/theme.js"></script>
 </body>
 </html>

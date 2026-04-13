@@ -1,6 +1,1 @@
 Project Link: https://www.figma.com/design/85J9bs9gD8Q3biOmb1Nwrn/diagramAsCode?node-id=1-2&t=6tvvKvIxvLOLSHpy-0
-Design Pattern: Modern IDE / Code Editor
-Target Resolutions: 
-- Mobile: 375px
-- Tablet: 768px
-- Desktop: 1440px+

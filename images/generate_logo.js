@@ -1,5 +1,0 @@
-export const getLogoSVG = () => `
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#4F46E5"/>
-    <path d="M12 28L28 12M12 12L28 28" stroke="white" stroke-width="3" stroke-linecap="round"/>
-</svg>`;

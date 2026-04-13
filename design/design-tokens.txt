@@ -1,25 +1,10 @@
 COLORS:
-- Bg-primary: #121212 (Editor dark background)
-- Bg-panel: #1e1e1e (Header and sidebars)
-- Text-main: #ffffff (Active text)
-- Text-muted: #a0a0a0 (Secondary labels)
-- Accent-blue: #3b82f6 (Run button, primary actions)
-- Accent-green: #10b981 (Success, "Great!" nodes)
-- Accent-orange: #f59e0b (Warnings, Decision nodes)
-- Accent-red: #ef4444 (Delete, "Debug" nodes)
-- Border: #333333 (Grid and separators)
-
-TYPOGRAPHY:
-- Interface: 'Inter', system-ui, sans-serif (14px, 16px)
-- Editor (Mono): 'Fira Code', 'Source Code Pro', monospace (14px)
-
-LAYOUT & SPACING:
-- Header Height: 60px
-- Tabs Height: 50px
-- Corner Radius: 8px (Buttons, Modals), 10px (Logo)
-- Spacing Unit: 4px (All margins/paddings are multiples of 4)
-
-BREAKPOINTS:
-- mobile: < 768px
-- tablet: 768px - 1024px
-- desktop: > 1024px
+- Bg-primary: #121212
+- Bg-panel: #1e1e1e
+- Text-main: #ffffff
+- Text-muted: #a0a0a0
+- Accent-blue: #3b82f6
+- Accent-green: #10b981
+- Accent-orange: #f59e0b
+- Accent-red: #ef4444
+- Border: #333333

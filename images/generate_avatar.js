@@ -1,7 +1,6 @@
 export const getAvatarSVG = (name = "Admin") => {
     const char = name.charAt(0).toUpperCase();
     const colors = ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6"];
-
     const bgColor = colors[char.charCodeAt(0) % colors.length];
 
     return `
