@@ -1,36 +1,10 @@
-PROJECT: DiagramCode Visual DSL Diagrammer IDE
-STUDENT: Ксения Хаджинова
-VARIANT: 13
-
-COLOR TOKENS
---color-primary: #030213
---color-accent-purple: #8B5CF6
---color-accent-indigo: #6366F1
---color-primary-blue: #3B82F6
---color-success: #10B981
---color-error: #EF4444
---color-warning: #F59E0B
---color-white: #FFFFFF
---color-canvas-background: #F9FAFB
---color-editor-background: #1E1E1E
---color-ui-border: #E2E8F0
---color-text-main: #1E293B
---color-text-muted: #64748B
-
-TYPOGRAPHY TOKENS
---font-primary: 'Inter', sans-serif
---font-mono: 'Source Code Pro', monospace
---font-size-base: 16px
---line-height-standard: 1.5
-
-SPACING AND RADIUS TOKENS
---header-height: 4rem
---footer-height: 2.5rem
---radius-standard: 0.375rem
---radius-medium: 0.625rem
---radius-large: 0.75rem
-
-EFFECT TOKENS
---shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05)
---shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1)
---transition-speed: 0.3s
+COLORS:
+- Bg-primary: #121212
+- Bg-panel: #1e1e1e
+- Text-main: #ffffff
+- Text-muted: #a0a0a0
+- Accent-blue: #3b82f6
+- Accent-green: #10b981
+- Accent-orange: #f59e0b
+- Accent-red: #ef4444
+- Border: #333333

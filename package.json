@@ -1,27 +1,19 @@
 {
-  "name": "diagram-code-ide",
-  "version": "1.1.0",
-  "description": "Visual DSL Diagrammer - Professional Modeling Environment (Variant 13)",
-  "main": "js/script.js",
+  "name": "visual-dsl-project",
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "start": "live-server",
-    "dev": "nodemon -e html,css,js --exec \"live-server\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [
-    "ide",
-    "dsl",
-    "diagram",
-    "bpmn",
-    "pure-js"
-  ],
-  "author": "Ксения Хаджинова",
-  "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "@vitejs/plugin-react": "^4.7.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0"
   },
   "devDependencies": {
-    "live-server": "^1.2.2",
-    "nodemon": "^3.1.0"
+    "vite": "^6.2.0"
   }
 }

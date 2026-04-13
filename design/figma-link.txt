@@ -1,6 +1,1 @@
-Ссылка на макет в Figma (Лабораторные работы №3 и №4):
-https://www.google.com/search?q=https://www.figma.com/file/%D0%92%D0%A1%D0%A2%D0%90%D0%92%D0%AC%D0%A2%D0%95_%D0%92%D0%90%D0%A8%D0%A3_%D0%A1%D0%A1%D0%AB%D0%9B%D0%9A%D0%A3_%D0%A1%D0%AE%D0%94%D0%90
-
-Название проекта: Visual DSL Diagrammer (Вариант 13)
-Тип: SaaS-платформа
-Уровень доступа по ссылке: Чтение (View)
+Project Link: https://www.figma.com/design/85J9bs9gD8Q3biOmb1Nwrn/diagramAsCode?node-id=1-2&t=6tvvKvIxvLOLSHpy-0
