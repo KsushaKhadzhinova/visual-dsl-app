@@ -1,49 +1,25 @@
---primary: #030213
---primary-foreground: #ffffff
---background: #ffffff
---foreground: #1a1a1a
---muted: #f4f4f5
---muted-foreground: #717182
---accent: #e9ebef
---border: #e2e8f0
---radius: 0.625rem
+COLORS:
+- Bg-primary: #121212 (Editor dark background)
+- Bg-panel: #1e1e1e (Header and sidebars)
+- Text-main: #ffffff (Active text)
+- Text-muted: #a0a0a0 (Secondary labels)
+- Accent-blue: #3b82f6 (Run button, primary actions)
+- Accent-green: #10b981 (Success, "Great!" nodes)
+- Accent-orange: #f59e0b (Warnings, Decision nodes)
+- Accent-red: #ef4444 (Delete, "Debug" nodes)
+- Border: #333333 (Grid and separators)
 
---editor-background: #1e1e1e
---editor-foreground: #d4d4d4
---editor-gutter: #1e1e1e
---editor-line-number: #858585
---editor-keyword: #c586c0
---editor-string: #ce9178
---editor-variable: #9cdcfe
---editor-operator: #d4d4d4
---editor-bracket: #ffd700
+TYPOGRAPHY:
+- Interface: 'Inter', system-ui, sans-serif (14px, 16px)
+- Editor (Mono): 'Fira Code', 'Source Code Pro', monospace (14px)
 
---canvas-background: #f9fafb
---canvas-grid: #e5e7eb
---diag-start: #3b82f6
---diag-decision: #fbbf24
---diag-success: #10b981
---diag-error: #ef4444
---diag-arrow: #64748b
+LAYOUT & SPACING:
+- Header Height: 60px
+- Tabs Height: 50px
+- Corner Radius: 8px (Buttons, Modals), 10px (Logo)
+- Spacing Unit: 4px (All margins/paddings are multiples of 4)
 
---font-sans: "Inter", "Segoe UI", Roboto, sans-serif
---font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace
-
---text-xs: 0.75rem
---text-sm: 0.875rem
---text-base: 1rem
---text-lg: 1.125rem
---text-xl: 1.25rem
-
---font-weight-normal: 400
---font-weight-medium: 500
---font-weight-semibold: 600
-
---breakpoint-md: 768px
---breakpoint-lg: 1024px
---max-width-desktop: 1920px
---max-height-desktop: 1080px
-
---toolbar-height: 56px
---terminal-height-collapsed: 40px
---terminal-height-expanded: 200px
+BREAKPOINTS:
+- mobile: < 768px
+- tablet: 768px - 1024px
+- desktop: > 1024px

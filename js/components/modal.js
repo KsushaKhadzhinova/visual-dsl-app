@@ -1,37 +1,36 @@
-export function initModals() {
-    document.addEventListener('click', (event) => {
-        const trigger = event.target.closest('[aria-controls]');
-        
-        if (trigger && !trigger.id.includes('burger')) {
-            const modalId = trigger.getAttribute('aria-controls');
-            const modal = document.getElementById(modalId);
-            
-            if (modal) {
-                modal.classList.add('is-active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
+const overlay = document.getElementById('overlay');
+const modals = document.querySelectorAll('.modal');
+const closeButtons = document.querySelectorAll('.close-btn, .modal__close');
+const modalTriggers = document.querySelectorAll('[data-modal-target]');
 
-        const isCloseAction = event.target.closest('.modal__close') || 
-                             event.target.hasAttribute('data-close') || 
-                             event.target.classList.contains('modal__overlay');
-        
-        if (isCloseAction) {
-            const modal = event.target.closest('.modal');
-            if (modal) {
-                modal.classList.remove('is-active');
-                document.body.style.overflow = '';
-            }
-        }
-    });
+const openModal = (modalId) => {
+    const targetModal = document.getElementById(modalId);
+    if (!targetModal) return;
+    targetModal.classList.add('modal--active');
+    overlay.classList.add('overlay--active');
+    document.body.classList.add('no-scroll');
+};
 
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            const activeModal = document.querySelector('.modal.is-active');
-            if (activeModal) {
-                activeModal.classList.remove('is-active');
-                document.body.style.overflow = '';
-            }
-        }
+const closeAllModals = () => {
+    modals.forEach(modal => modal.classList.remove('modal--active'));
+    overlay.classList.remove('overlay--active');
+    document.body.classList.remove('no-scroll');
+};
+
+modalTriggers.forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const modalId = trigger.getAttribute('data-modal-target');
+        openModal(modalId);
     });
-}
+});
+
+closeButtons.forEach(btn => {
+    btn.addEventListener('click', closeAllModals);
+});
+
+overlay.addEventListener('click', closeAllModals);
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllModals();
+});

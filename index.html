@@ -1,263 +1,162 @@
 <!DOCTYPE html>
-<html lang="en" itemscope itemtype="https://schema.org/SoftwareApplication">
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DiagramCode - Diagram as Code Tool</title>
-<link rel="stylesheet" href="css/variables.css">
-<link rel="stylesheet" href="css/styles.css">
-<link rel="stylesheet" href="css/header.css">
-<link rel="stylesheet" href="css/main.css">
-<link rel="stylesheet" href="css/footer.css">
-<link rel="stylesheet" href="css/animations.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisualDSL Studio — Professional DSL Editor</title>
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/header.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/modal.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VisualDSL",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "author": {
+            "@type": "Person",
+            "name": "Ksusha Khadzhinova"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
 </head>
-<body class="page">
-<a href="#code-workspace" class="skip-link sr-only">Skip to content</a>
-<input type="radio" name="dropdown-state" id="notation-toggle" class="state-ctrl sr-only">
-<input type="radio" name="dropdown-state" id="export-toggle" class="state-ctrl sr-only">
-<input type="radio" name="dropdown-state" id="dropdown-close" class="state-ctrl sr-only" checked>
+<body class="page dark-theme">
+    <a href="#main" class="button" style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">Перейти к основному контенту</a>
 
-<input type="checkbox" id="mobile-menu-ctrl" class="state-ctrl sr-only">
-<input type="radio" name="mobile-view" id="mobile-tab-code" class="state-ctrl sr-only">
-<input type="radio" name="mobile-view" id="mobile-tab-diagram" class="state-ctrl sr-only" checked>
-
-<div class="app">
     <header class="header">
-        <div class="toolbar">
-            <div class="toolbar__left">
-                <div class="logo">
-                    <div class="logo__icon">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 4L10 10M10 10L16 4M10 10L4 16M10 10L16 16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <h1 class="logo__text" itemprop="name">DiagramCode</h1>
-                </div>
-
-                <nav class="navigation-group u-hide-mobile">
-                    <div class="dropdown-wrap">
-                        <label for="notation-toggle" class="btn btn--outline btn--sm dropdown-btn">
-                            <span>Notation</span>
-                            <svg class="icon icon--arrow" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-                        </label>
-                        <label for="dropdown-close" class="dropdown-overlay"></label>
-                        <ul class="dropdown-box" role="listbox">
-                            <li class="dropdown-box__item">Mermaid</li>
-                            <li class="dropdown-box__item">PlantUML</li>
-                            <li class="dropdown-box__item">Graphviz</li>
-                            <li class="dropdown-box__item">D2</li>
-                        </ul>
-                    </div>
-                </nav>
+        <div class="header__container">
+            <div class="header__logo-block" id="logo-container">
             </div>
 
-            <div class="toolbar__right">
-                <div class="actions">
-                    <button class="btn btn--primary">
-                        <svg class="icon icon--fill" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
-                        <span class="btn__text u-hide-mobile">Run</span>
+            <nav class="header__nav" aria-label="Верхняя панель">
+                <div class="dropdown">
+                    <button class="button button--secondary dropdown__toggle" id="notationBtn" data-current="Mermaid" aria-haspopup="true" aria-expanded="false">
+                        Mermaid <span class="dropdown__arrow" aria-hidden="true">▼</span>
                     </button>
-                    
-                    <div class="desktop-only-group u-hide-tablet u-hide-mobile">
-                        <button class="btn btn--outline">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
-                            <span class="btn__text">Save</span>
-                        </button>
-
-                        <div class="dropdown-wrap">
-                            <label for="export-toggle" class="btn btn--outline dropdown-btn">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                                <span class="btn__text">Export</span>
-                            </label>
-                            <label for="dropdown-close" class="dropdown-overlay"></label>
-                            <div class="dropdown-box dropdown-box--export">
-                                <div class="dropdown-box__label">Export Format</div>
-                                <hr class="dropdown-box__sep">
-                                <label class="radio-label"><input type="radio" name="efmt" checked><span>SVG</span></label>
-                                <label class="radio-label"><input type="radio" name="efmt"><span>PNG</span></label>
-                                <label class="radio-label"><input type="radio" name="efmt"><span>PDF</span></label>
-                                <hr class="dropdown-box__sep">
-                                <button class="btn btn--primary btn--full btn--sm">Export</button>
-                            </div>
-                        </div>
-
-                        <a href="#ai-drawer" class="btn btn--outline btn--accent">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                            <span class="btn__text">AI Prompt</span>
-                        </a>
-                    </div>
-
-                    <a href="#help-dialog" class="btn btn--ghost btn--icon doc-trigger">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
-                    </a>
-
-                    <label for="mobile-menu-ctrl" class="btn btn--outline btn--icon burger-trigger">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    </label>
+                    <ul class="dropdown__menu" id="notationMenu" role="menu">
+                        <li class="dropdown__item" data-value="Mermaid" role="menuitem">Mermaid</li>
+                        <li class="dropdown__item" data-value="PlantUML" role="menuitem">PlantUML</li>
+                        <li class="dropdown__item" data-value="Graphviz" role="menuitem">Graphviz</li>
+                        <li class="dropdown__item" data-value="D2" role="menuitem">D2</li>
+                    </ul>
                 </div>
-            </div>
+                
+                <button class="button button--primary" id="runBtn" aria-label="Сгенерировать диаграмму"></button>
+
+                <button class="button button--secondary icon-only" id="helpBtn" data-modal-target="modal-help" aria-label="Справка"></button>
+
+                <button class="header__burger" id="burgerBtn" aria-label="Открыть мобильное меню">
+                    <span></span><span></span><span></span>
+                </button>
+            </nav>
         </div>
-        <meta itemprop="applicationCategory" content="TechnicalDesignSoftware">
-        <meta itemprop="operatingSystem" content="Universal">
     </header>
 
-    <main class="main" id="code-workspace">
-        <nav class="view-tabs-mobile" aria-label="Layout toggle">
-            <label for="mobile-tab-code" class="view-tabs-mobile__btn">Code</label>
-            <label for="mobile-tab-diagram" class="view-tabs-mobile__btn">Diagram</label>
-        </nav>
+    <nav class="tabs" aria-label="Виды редактора">
+        <button class="tabs__btn tabs__btn--active" data-target="code">Code</button>
+        <button class="tabs__btn" data-target="diagram">Diagram</button>
+    </nav>
 
-        <div class="layout-container">
-            <section class="pane pane--editor">
-                <div class="pane__head">
-                    <span class="pane__title">diagram.mermaid</span>
-                    <div class="pane__action">
-                        <span>Dark Mode</span>
-                        <div class="ui-toggle ui-toggle--on"></div>
-                    </div>
-                </div>
-                <div class="code-area">
-                    <div class="code-area__line-nums">
-                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
-                    </div>
-                    <article class="code-area__view">
-                        <pre class="editor-font"><code><span class="hl-kw">graph TD</span>
-A<span class="hl-br">[</span><span class="hl-st">Start</span><span class="hl-br">]</span> <span class="hl-op">--&gt;</span> B<span class="hl-br">{</span><span class="hl-st">Is it working?</span><span class="hl-br">}</span>
-B <span class="hl-op">--&gt;</span><span class="hl-op">|</span><span class="hl-st">Yes</span><span class="hl-op">|</span> C<span class="hl-br">[</span><span class="hl-st">Great!</span><span class="hl-br">]</span>
-B <span class="hl-op">--&gt;</span><span class="hl-op">|</span><span class="hl-st">No</span><span class="hl-op">|</span> D<span class="hl-br">[</span><span class="hl-st">Debug</span><span class="hl-br">]</span>
-D <span class="hl-op">--&gt;</span> B
-C <span class="hl-op">--&gt;</span> E<span class="hl-br">[</span><span class="hl-st">End</span><span class="hl-br">]</span></code></pre>
-</article>
-                </div>
-            </section>
+    <main class="main-content" id="main">
+        <section class="editor-section" id="codePanel" aria-label="Область кода">
+            <div class="line-numbers" id="lineNumbers" aria-hidden="true"></div>
+            <textarea class="editor-input" id="dslEditor" spellcheck="false" autocomplete="off" aria-label="Ввод DSL кода">graph TD
+    A[Start] --> B{Is it working?}
+    B -->|Yes| C[Great!]
+    B -->|No| D[Debug]
+    D --> B
+    C --> E[End]</textarea>
+        </section>
 
-            <div class="pane-resizer" role="separator" aria-label="Resize control"></div>
-
-            <section class="pane pane--canvas">
-                <div class="canvas-frame">
-                    <figure class="canvas-render">
-                        <svg width="450" height="380" viewBox="0 0 450 380" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M225 105V155M275 220L340 270M175 220L110 270M225 285V325M80 300Q80 220 160 220" stroke="#64748B" stroke-width="2"/>
-                            <rect x="150" y="40" width="150" height="65" rx="8" fill="#3B82F6"/>
-                            <text x="225" y="78" text-anchor="middle" fill="white" font-family="Inter" font-weight="500">Start</text>
-                            <path d="M225 155L315 220L225 285L135 220L225 155Z" fill="#FBBF24" stroke="#F59E0B" stroke-width="1"/>
-                            <text x="225" y="225" text-anchor="middle" fill="#78350F" font-family="Inter" font-size="12">Is it working?</text>
-                            <rect x="30" y="270" width="120" height="55" rx="8" fill="#EF4444"/>
-                            <text x="90" y="303" text-anchor="middle" fill="white" font-family="Inter">Debug</text>
-                            <rect x="300" y="270" width="120" height="55" rx="8" fill="#10B981"/>
-                            <text x="360" y="303" text-anchor="middle" fill="white" font-family="Inter">Great!</text>
-                            <rect x="300" y="325" width="120" height="55" rx="8" fill="#3B82F6"/>
-                            <text x="360" y="358" text-anchor="middle" fill="white" font-family="Inter">End</text>
-                            <text x="305" y="245" fill="#64748B" font-size="12" font-family="Inter">Yes</text>
-                            <text x="125" y="245" fill="#64748B" font-size="12" font-family="Inter">No</text>
-                        </svg>
-                    </figure>
-                </div>
-            </section>
-        </div>
-
-        <aside class="terminal">
-            <header class="terminal__head">
-                <span class="terminal__label">Terminal Output</span>
-                <time class="terminal__clock" datetime="10:15:32">10:15:32 AM</time>
-            </header>
-        </aside>
+        <section class="diagram-section" id="diagramPanel" aria-label="Область предварительного просмотра">
+            <div class="canvas" id="canvas">
+            </div>
+        </section>
     </main>
 
-    <footer class="footer">
-        <div class="footer__left">
-            <span class="live-dot live-dot--active"></span>
-            <span>System Online</span>
+    <aside class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu__header">
+            <div id="mobile-logo-container"></div>
+            <button class="close-btn" id="closeMenu" aria-label="Закрыть меню">&times;</button>
         </div>
-        <div class="footer__right">
-            <span itemprop="offers" itemscope itemtype="https://schema.org/Offer">UTF-8 | Lines: 6 | <meta itemprop="price" content="0"><span itemprop="priceCurrency">USD</span> 0.00</span>
+        <nav class="mobile-menu__nav" aria-label="Навигация в мобильном меню">
+            <div class="mobile-menu__section">
+                <h3 id="label-notation">Notation</h3>
+                <ul class="mobile-menu__list" aria-labelledby="label-notation">
+                    <li data-value="Mermaid">Mermaid</li>
+                    <li data-value="PlantUML">PlantUML</li>
+                    <li data-value="D2">D2</li>
+                </ul>
+            </div>
+            <div class="mobile-menu__actions">
+                <button class="button button--full button--secondary" id="mobileSave">Save Code</button>
+                <button class="button button--full button--secondary" id="mobileExport">Export PNG</button>
+                <button class="button button--full button--accent" id="mobileAi" data-modal-target="modal-ai">AI Assistant</button>
+            </div>
+            <div class="profile-block">
+                <div id="user-profile" class="profile-container"></div>
+                <div style="margin-left: 12px">
+                    <p style="font-size: 14px; font-weight: 600">Ksusha K.</p>
+                    <p style="font-size: 11px; color: var(--text-muted)">User Administrator</p>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <article class="modal" id="modal-help" aria-modal="true" role="dialog">
+        <div class="modal__header">
+            <h3>Quick Start Guide</h3>
+            <button class="modal__close" aria-label="Закрыть">&times;</button>
+        </div>
+        <div class="modal__body">
+            <p>Используйте синтаксис Mermaid или PlantUML для описания процессов. Каждая стрелка "-->" создает связь между объектами.</p>
+            <div class="modal__code-block" aria-hidden="true">
+                graph TD<br>
+                A[Start] --> B[Result]
+            </div>
+            <p>Результат генерации отобразится на панели превью справа (или во вкладке Diagram на мобильных).</p>
+        </div>
+        <div class="modal__footer">
+            <button class="button button--primary close-btn">Понятно</button>
+        </div>
+    </article>
+
+    <article class="modal" id="modal-ai" aria-modal="true" role="dialog">
+        <div class="modal__header">
+            <h3>AI Prompt Generator</h3>
+            <button class="modal__close" aria-label="Закрыть">&times;</button>
+        </div>
+        <div class="modal__body">
+            <p>Опишите желаемую диаграмму естественным языком:</p>
+            <textarea class="editor-input" style="background:#000; width:100%; height:120px; border:1px solid var(--border-color); border-radius:6px; color:white; padding:12px;" placeholder="Пример: Создай схему аутентификации пользователя..."></textarea>
+        </div>
+        <div class="modal__footer">
+            <button class="button button--primary" id="generateAi">Сгенерировать</button>
+        </div>
+    </article>
+
+    <footer class="footer">
+        <div class="footer__content">
+            <time datetime="2026">2026</time> © VisualDSL Studio — Pixel Perfect Lab 3-6. Все кнопки и иконки сгенерированы динамически через JavaScript API.
         </div>
     </footer>
-</div>
 
-<aside class="drawer">
-    <label for="mobile-menu-ctrl" class="drawer__overlay"></label>
-    <div class="drawer__panel">
-        <div class="drawer__head">
-            <h3>Menu</h3>
-            <label for="mobile-menu-ctrl" class="close-x-btn">&times;</label>
-        </div>
-        <div class="drawer__body">
-            <p class="drawer__group-label">Notation</p>
-            <div class="btn-stack"><button class="btn btn--outline btn--full">Mermaid</button><button class="btn btn--outline btn--full">PlantUML</button></div>
-            <hr class="drawer__sep">
-            <p class="drawer__group-label">Actions</p>
-            <div class="btn-stack">
-                <button class="btn btn--outline btn--full">Save</button>
-                <a href="#export-mobile-drawer" class="btn btn--outline btn--full">Export</a>
-                <a href="#ai-drawer" class="btn btn--outline btn--full">AI Prompt</a>
-            </div>
-        </div>
-    </div>
-</aside>
+    <div class="overlay" id="overlay"></div>
 
-<section id="ai-drawer" class="modal modal--bottom">
-    <a href="#" class="modal__overlay"></a>
-    <article class="modal__surface modal__surface--drawer">
-        <div class="drawer-handle"></div>
-        <div class="modal__head">
-            <h3>AI Prompt</h3>
-            <p>Describe your visual logic</p>
-        </div>
-        <div class="modal__content">
-            <div class="field-wrap">
-                <label class="label">Engine:</label>
-                <select class="control-select"><option>Mermaid</option><option>D2</option></select>
-            </div>
-            <div class="field-wrap">
-                <label class="label">Prompt:</label>
-                <textarea class="control-textarea" rows="3" placeholder="Describe the diagram you want..."></textarea>
-            </div>
-            <div class="modal__actions">
-                <button class="btn btn--primary">Generate</button>
-                <a href="#" class="btn btn--outline">Close</a>
-            </div>
-        </div>
-    </article>
-</section>
-
-<div id="export-mobile-drawer" class="modal modal--bottom">
-    <a href="#" class="modal__overlay"></a>
-    <article class="modal__surface modal__surface--drawer">
-        <div class="drawer-handle"></div>
-        <div class="modal__head"><h3>Export Diagram</h3><p>Choose format</p></div>
-        <div class="modal__content">
-            <label class="option-row"><input type="radio" name="mfm" checked><span>SVG - Scalable</span></label>
-            <label class="option-row"><input type="radio" name="mfm"><span>PNG - Image</span></label>
-            <div class="btn-stack mt-24">
-                <button class="btn btn--primary btn--full">Export</button>
-                <a href="#" class="btn btn--outline btn--full">Cancel</a>
-            </div>
-        </div>
-    </article>
-</div>
-
-<section id="help-dialog" class="modal modal--center">
-    <a href="#" class="modal__overlay"></a>
-    <article class="modal__surface modal__surface--dialog">
-        <header class="modal__head">
-            <h3>Help / Documentation</h3>
-            <p>Syntax Overview</p>
-            <a href="#" class="close-x-modal">&times;</a>
-        </header>
-        <div class="modal__content custom-scroll">
-            <section>
-                <h4>Node Types</h4>
-                <div class="doc-code"><span>A[Rectangle]</span><span>B{Diamond}</span><span>C((Circle))</span></div>
-            </section>
-            <section class="mt-16">
-                <h4>Flow Control</h4>
-                <div class="doc-code"><span>A --> B (Arrow)</span><span>B -- Text --> C</span></div>
-            </section>
-        </div>
-    </article>
-</section>
-
-<div class="toasts-anchor" aria-live="assertive"></div>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/components/editor.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/dropdown.js"></script>
+    <script src="js/theme.js"></script>
 </body>
 </html>
