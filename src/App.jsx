@@ -5,9 +5,15 @@ import Footer from './components/layout/Footer';
 import ActivityBar from './components/features/ActivityBar';
 import PricingList from './components/features/PricingList';
 import ServiceStats from './components/features/ServiceStats';
+import EntityForm from './components/features/EntityForm';
 import { pricingPlans, usageStats, breadcrumbs } from './data/mockData';
 
 function App() {
+  const handleEntitySubmit = (formData) => {
+    console.log('✅ Данные успешно отправлены:', formData);
+    alert(`Сущность создана: ${formData.name}`);
+  };
+
   return (
     <div className="ide">
       <ActivityBar />
@@ -38,7 +44,10 @@ function App() {
         </section>
         <section className="main__preview">
           <div className="canvas">
-            <div className="loader">Diagram Preview (React Component)</div>
+            <EntityForm 
+              mode="create"
+              onSubmit={handleEntitySubmit}
+            />
           </div>
         </section>
       </main>
