@@ -1,5 +1,41 @@
 <%- include('partials/header') %>
-<h1 class="error">500 - Внутренняя ошибка сервера</h1>
-<p>Что-то пошло не так на стороне сервера. Ошибка записана в журнал.</p>
-<p><a href="/<%= authQuery %>">Вернуться на главную страницу</a></p>
+
+<div class="error-container">
+  <div class="error-content">
+    <h1 class="error-heading">⚠️ 500 - Внутренняя ошибка сервера</h1>
+    
+    <div class="error-details">
+      <h2>Что произошло?</h2>
+      <p>Произошла непредвиденная ошибка на стороне сервера при обработке вашего запроса. 
+      Это означает, что что-то пошло не так в коде приложения, а не в ваших действиях.</p>
+      
+      <h3>Подробнее:</h3>
+      <ul>
+        <li><strong>Сервер столкнулся с ошибкой</strong> во время обработки вашего запроса</li>
+        <li><strong>Информация об ошибке записана в журнал</strong> для анализа разработчиками</li>
+        <li><strong>Это не ваша ошибка —</strong> вы не сделали ничего неправильного</li>
+        <li><strong>Проблема может быть временной</strong> — попробуйте позже</li>
+      </ul>
+
+      <h2>Что вы можете сделать?</h2>
+      <ol>
+        <li><strong>Попробуйте позже</strong> — ошибка может быть временной</li>
+        <li><strong>Очистите кэш браузера:</strong> Ctrl+Shift+Del (Windows) или Cmd+Shift+Del (Mac)</li>
+        <li><strong>Обновите страницу:</strong> F5 или кнопка обновления</li>
+        <li><strong>Вернитесь на главную страницу:</strong> используйте кнопку ниже</li>
+        <li><strong>Если проблема сохраняется,</strong> свяжитесь с поддержкой</li>
+      </ol>
+
+      <div class="error-code">
+        <p><small>Код ошибки: <code>HTTP 500 INTERNAL_SERVER_ERROR</code></small></p>
+      </div>
+    </div>
+
+    <div class="error-actions">
+      <a href="/<%= authQuery %>" class="btn btn-primary">← Вернуться на главную</a>
+      <button onclick="history.back()" class="btn btn-secondary">← Назад</button>
+    </div>
+  </div>
+</div>
+
 <%- include('partials/footer') %>

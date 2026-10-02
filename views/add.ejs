@@ -1,27 +1,146 @@
 <%- include('partials/header') %>
-<h1>Новая диаграмма</h1>
 
-<% if (errors.length) { %>
-    <ul class="errors">
-        <% errors.forEach(function (e) { %><li><%= e %></li><% }); %>
-    </ul>
-<% } %>
-
-<form method="POST" action="/add<%= authQuery %>">
-    <label for="title">Название</label>
-    <input type="text" id="title" name="title" value="<%= form.title %>">
-
-    <label for="type">Тип диаграммы</label>
-    <select id="type" name="type">
-        <% types.forEach(function (t) { %>
-            <option value="<%= t %>" <%= form.type === t ? 'selected' : '' %>><%= t %></option>
+<div class="form-container">
+  <h1>✨ Новая диаграмма</h1>
+  
+  <% if (errors.length) { %>
+    <div class="error-messages">
+      <h3>❌ Пожалуйста, исправьте следующие ошибки:</h3>
+      <ul class="errors">
+        <% errors.forEach(function (e) { %>
+          <li class="error-item">
+            <span class="error-icon">⚠️</span>
+            <%= e %>
+          </li>
         <% }); %>
-    </select>
+      </ul>
+    </div>
+  <% } %>
 
-    <label for="dsl">DSL-код</label>
-    <textarea id="dsl" name="dsl" rows="6"><%= form.dsl %></textarea>
+  <form method="POST" action="/add<%= authQuery %>" class="diagram-form">
+    
+    <!-- Название -->
+    <div class="form-group">
+      <label for="title">
+        📝 Название диаграммы
+        <span class="required">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="title" 
+        name="title" 
+        value="<%= form.title %>"
+        placeholder="Введите название диаграммы..."
+        maxlength="100"
+        required
+        class="form-input"
+      >
+      <small class="help-text">Обязательное поле. Не может быть пустым.</small>
+      <small class="char-counter" id="titleCounter">0/100 символов</small>
+    </div>
 
-    <button type="submit" class="btn">Добавить</button>
-    <a href="/<%= authQuery %>">Отмена</a>
-</form>
+    <!-- Тип диаграммы -->
+    <div class="form-group">
+      <label for="type">
+        📊 Тип диаграммы
+        <span class="required">*</span>
+      </label>
+      <select id="type" name="type" class="form-input" required>
+        <option value="">-- Выберите тип --</option>
+        <% types.forEach(function (t) { %>
+          <option value="<%= t %>" <%= form.type === t ? 'selected' : '' %>>
+            <%= t %>
+          </option>
+        <% }); %>
+      </select>
+      <small class="help-text">Выберите один из доступных типов диаграмм</small>
+    </div>
+
+    <!-- DSL-код -->
+    <div class="form-group">
+      <label for="dsl">
+        💻 DSL-код
+        <span class="required">*</span>
+      </label>
+      <textarea 
+        id="dsl" 
+        name="dsl" 
+        rows="8"
+        placeholder="Введите DSL-код для вашей диаграммы..."
+        maxlength="5000"
+        required
+        class="form-input form-textarea"
+      ><%= form.dsl %></textarea>
+      <small class="help-text">Обязательное поле. Не может быть пустым.</small>
+      <small class="char-counter" id="dslCounter">0/5000 символов</small>
+    </div>
+
+    <!-- Время создания (автоматически генерируется) -->
+    <div class="form-group">
+      <label for="createdAt">
+        ⏰ Время создания
+        <span class="auto-text">(автоматическое)</span>
+      </label>
+      <input 
+        type="datetime-local" 
+        id="createdAt" 
+        name="createdAt"
+        value="<%= new Date().toISOString().slice(0, 16) %>"
+        disabled
+        class="form-input"
+      >
+      <small class="help-text">Это поле заполняется автоматически текущей датой и временем.</small>
+    </div>
+
+    <!-- Кнопки действия -->
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">✅ Добавить диаграмму</button>
+      <a href="/<%= authQuery %>" class="btn btn-secondary">❌ Отмена</a>
+    </div>
+  </form>
+
+  <!-- JavaScript для счётчика символов -->
+  <script>
+    const titleInput = document.getElementById('title');
+    const dslTextarea = document.getElementById('dsl');
+    const titleCounter = document.getElementById('titleCounter');
+    const dslCounter = document.getElementById('dslCounter');
+
+    titleInput.addEventListener('input', function() {
+      titleCounter.textContent = this.value.length + '/100 символов';
+    });
+
+    dslTextarea.addEventListener('input', function() {
+      dslCounter.textContent = this.value.length + '/5000 символов';
+    });
+
+    // Инициализация при загрузке
+    titleCounter.textContent = titleInput.value.length + '/100 символов';
+    dslCounter.textContent = dslTextarea.value.length + '/5000 символов';
+
+    // Валидация перед отправкой
+    document.querySelector('.diagram-form').addEventListener('submit', function(e) {
+      if (!titleInput.value.trim()) {
+        e.preventDefault();
+        alert('❌ Пожалуйста, введите название диаграммы');
+        titleInput.focus();
+        return;
+      }
+
+      if (!document.getElementById('type').value) {
+        e.preventDefault();
+        alert('❌ Пожалуйста, выберите тип диаграммы');
+        return;
+      }
+
+      if (!dslTextarea.value.trim()) {
+        e.preventDefault();
+        alert('❌ Пожалуйста, введите DSL-код');
+        dslTextarea.focus();
+        return;
+      }
+    });
+  </script>
+</div>
+
 <%- include('partials/footer') %>
